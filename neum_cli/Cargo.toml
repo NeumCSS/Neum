@@ -8,6 +8,10 @@ readme = "../README.md"
 respository = "https://github.com/AMTitan/Neum"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "neum"
+path = "src/main.rs"
+
 [dependencies]
 clap = "4.2.1"
 neum = {path = "../neum", version = "0.1.0"}
