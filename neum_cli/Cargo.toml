@@ -2,7 +2,7 @@
 name = "neum-cli"
 version = "0.1.0"
 edition = "2021"
-licence = "MIT"
+license = "MIT"
 description = "A CSS formating cli program"
 readme = "../README.md"
 respository = "https://github.com/AMTitan/Neum"

@@ -2,7 +2,7 @@
 name = "neum-parse"
 version = "0.1.0"
 edition = "2021"
-licence = "MIT"
+license = "MIT"
 description = "A parser for the CSS neum file type"
 readme = "../README.md"
 respository = "https://github.com/AMTitan/Neum"
