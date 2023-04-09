@@ -10,7 +10,7 @@ respository = "https://github.com/AMTitan/Neum"
 
 [dependencies]
 clap = "4.2.1"
-neum = {path = "../neum"}
+neum = {path = "../neum", version = "0.1.0"}
 lazy_static = "1.4.0"
 logos = "0.12.1"
 notify = "5.1.0"
