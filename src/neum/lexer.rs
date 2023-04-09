@@ -90,13 +90,13 @@ pub fn lex(file: String, content: String) -> Vec<(Token, Range<usize>)> {
 
             // Multipul NewLines
             let nl_needed = token == &Token::NewLine && !needs_nl;
-            needs_nl = match token {
-                Token::String(_) => true,
-                Token::ReplacementStart => true,
-                Token::ReplacementEnd => true,
-                Token::Number(_) => true,
-                _ => false,
-            };
+            needs_nl = matches!(
+                token,
+                Token::String(_)
+                    | Token::ReplacementStart
+                    | Token::ReplacementEnd
+                    | Token::Number(_)
+            );
 
             // End
             multi_line_comment_number == 0 && !nl_needed

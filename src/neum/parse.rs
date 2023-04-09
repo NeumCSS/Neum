@@ -14,7 +14,7 @@ pub fn parse(
             Token::String(_) => {
                 let mut name = vec![next.0.clone()];
                 let mut last = next;
-                while let Some(i) = token.next() {
+                for i in token.by_ref() {
                     last = i;
                     if i.0 != Token::ConvertTo {
                         name.push(i.0.clone());
@@ -42,7 +42,7 @@ pub fn parse(
                     }
                 };
                 let mut broke = false;
-                while let Some(i) = token.next() {
+                for i in token.by_ref() {
                     last = i;
                     if i.0 != go_to {
                         convert_to.push(i.0.clone());
