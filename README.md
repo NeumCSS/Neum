@@ -1,1 +1,1 @@
-# Neum
+![Neum](assets/logo.svg)
