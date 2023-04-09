@@ -1,5 +1,3 @@
-use std::ops::Range;
-
 #[macro_export]
 macro_rules! error {
     ( $( $x:expr ),* ) => {
@@ -10,17 +8,21 @@ macro_rules! error {
     };
 }
 
-pub fn file_error(file: String, content: String, location: Range<usize>, error: &str) {
-    let (x, y) =
-        get_loc(content.clone(), location.start).unwrap_or_else(|| error!("{error} {file}"));
-    let line = get_line(content, y - 1).unwrap_or_else(|| error!("{error} {file}"));
-    eprintln!("Error: {error} {file}:{y}:{x}");
-    eprintln!("{line}");
-    eprintln!("{}{}", " ".repeat(x), "^".repeat(location.len()));
-    std::process::exit(1);
+#[macro_export]
+macro_rules! file_error {
+    ( $file:expr, $content:expr, $location:expr, $error:expr ) => {{
+        let (x, y) = $crate::neum::error::get_loc($content.clone(), $location.start)
+            .unwrap_or_else(|| $crate::error!("{} {}", $error, $file));
+        let line = $crate::neum::error::get_line($content, y - 1)
+            .unwrap_or_else(|| $crate::error!("{} {}", $error, $file));
+        eprintln!("Error: {} {}:{}:{}", $error, $file, y, x);
+        eprintln!("{line}");
+        eprintln!("{}{}", " ".repeat(x), "^".repeat($location.len()));
+        std::process::exit(1);
+    }};
 }
 
-fn get_loc(content: String, location: usize) -> Option<(usize, usize)> {
+pub fn get_loc(content: String, location: usize) -> Option<(usize, usize)> {
     let mut y = 0;
     let mut current = 0;
     for line in content.split('\n') {
@@ -34,6 +36,6 @@ fn get_loc(content: String, location: usize) -> Option<(usize, usize)> {
     None
 }
 
-fn get_line(content: String, line: usize) -> Option<String> {
+pub fn get_line(content: String, line: usize) -> Option<String> {
     Some(content.lines().nth(line)?.to_string())
 }
