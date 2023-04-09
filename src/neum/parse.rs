@@ -141,6 +141,7 @@ pub fn parse(
                                 | Token::Number(_)
                                 | Token::String(_)
                                 | Token::SemiColon
+                                | Token::NewLine
                         ) {
                             file_error!(file, content, i.1, "Unexpected token in converts to");
                         }
@@ -208,39 +209,79 @@ pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: String) -> Option<String
                             if next == &Token::ReplacementEnd {
                                 (*variables.get("").unwrap_or_else(|| {
                                     panic!("Internal Error\nCould not find variable \"\" in {:?}",
-                            i.1)
+                                           i.1)
                                 })).clone().to_string()
                             } else {
+                                let mut next_value = false;
                                 let value = match next {
                                     Token::String(w) => (*variables.get(w).unwrap_or_else(|| {
                                         panic!("Internal Error\nCould not find variable \"{}\" in {:?}", w, i.1)})).to_string().clone(),
                                     Token::Number(n) => n.to_string(),
+                                    Token::Add => {
+                                        next_value = true;
+                                        (*variables.get("").unwrap_or_else(|| {
+                                            panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)})).to_string().clone()
+                                    },
+                                    Token::Subtract => {
+                                        next_value = true;
+                                        (*variables.get("").unwrap_or_else(|| {
+                                            panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)})).to_string().clone()
+                                    },
+                                    Token::Times => {
+                                        next_value = true;
+                                        (*variables.get("").unwrap_or_else(|| {
+                                            panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)})).to_string().clone()
+                                    },
+                                    Token::Divide => {
+                                        next_value = true;
+                                        (*variables.get("").unwrap_or_else(|| {
+                                            panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)})).to_string().clone()
+                                    },
                                     _ => panic!("Internal Error\nDont know what {:?} is in {:?}", next, i.1),
                                 };
                                 if returns_iter.len() > 0 {
                                     let mut int_value = value.parse::<f64>().unwrap_or_else(|_| {panic!("Internal Error\nCant do multipul things to a string, \"{}\", in {:?}", value, i.1)});
-                                while let Some(y) = returns_iter.next() {
-                                    if y == &Token::ReplacementEnd {
-                                        break;
+                                    if next_value {
+                                        let next_value = match returns_iter
+                                            .next()
+                                            .expect("Internal Error\nCould nothing after a \"+\" \"-\" \"*\" \"/\"") {
+                                                Token::String(w) => variables.get(w).unwrap_or_else(|| {
+                                                    panic!("Internal Error\nCould not find variable \"{}\" in {:?}", w, i.1)})
+                                                    .parse::<f64>().unwrap_or_else(|_| {
+                                                    panic!("Internal Error\nCould not convert variable \"{}\" in {:?} to f64", w, i.1)}),
+                                                Token::Number(w) => *w,
+                                                _ => panic!("Internal Error\nCould not find out what char is requested for"),
+                                            };
+                                        match next {
+                                            Token::Add => int_value+=next_value,
+                                            Token::Subtract => int_value-=next_value,
+                                            Token::Times => int_value*=next_value,
+                                            Token::Divide => int_value/=next_value,
+                                            _ => panic!("Internal Error\nUsed a token not able to use in replacement"),
+                                        }
                                     }
-                            let next = match returns_iter
-                                .next()
-                                .expect("Internal Error\nCould nothing after a \"+\" \"-\" \"*\" \"/\"") {
-                                    Token::String(w) => variables.get(w).unwrap_or_else(|| {
-                                        panic!("Internal Error\nCould not find variable \"{}\" in {:?}", w, i.1)})
-                                        .parse::<f64>().unwrap_or_else(|_| {
-                                        panic!("Internal Error\nCould not convert variable \"{}\" in {:?} to f64", w, i.1)}),
-                                    Token::Number(w) => *w,
-                                    _ => panic!("Internal Error\nCould not find out what char is requested for"),
-                                };
-                                    match y {
-                                        Token::Add => int_value+=next,
-                                        Token::Subtract => int_value-=next,
-                                        Token::Times => int_value*=next,
-                                        Token::Divide => int_value/=next,
-                                        _ => panic!("Internal Error\nUsed a token not able to use in replacement"),
+                                    while let Some(y) = returns_iter.next() {
+                                        if y == &Token::ReplacementEnd {
+                                            break;
+                                        }
+                                        let next = match returns_iter
+                                            .next()
+                                            .expect("Internal Error\nCould nothing after a \"+\" \"-\" \"*\" \"/\"") {
+                                                Token::String(w) => variables.get(w).unwrap_or_else(|| {
+                                                    panic!("Internal Error\nCould not find variable \"{}\" in {:?}", w, i.1)})
+                                                    .parse::<f64>().unwrap_or_else(|_| {
+                                                    panic!("Internal Error\nCould not convert variable \"{}\" in {:?} to f64", w, i.1)}),
+                                                Token::Number(w) => *w,
+                                                _ => panic!("Internal Error\nCould not find out what char is requested for"),
+                                            };
+                                        match y {
+                                            Token::Add => int_value+=next,
+                                            Token::Subtract => int_value-=next,
+                                            Token::Times => int_value*=next,
+                                            Token::Divide => int_value/=next,
+                                            _ => panic!("Internal Error\nUsed a token not able to use in replacement"),
+                                        }
                                     }
-                                }
                                     int_value.to_string()
                                 }
                                 else {
@@ -254,12 +295,16 @@ pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: String) -> Option<String
                         Token::Divide => "/".to_string(),
                         Token::Number(x) => x.to_string(),
                         Token::String(x) => x.clone(),
+                        Token::SemiColon => ";".to_string(),
+                        Token::NewLine => ";".to_string(),
                         _ => "".to_string(),
                     }
                     .as_str(),
                 )
             }
-            println!("{:?}", i.1);
+            if !returns.ends_with(';') {
+                returns.push(';');
+            }
             return Some(returns);
         }
     }
