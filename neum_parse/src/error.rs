@@ -11,9 +11,9 @@ macro_rules! error {
 #[macro_export]
 macro_rules! file_error {
     ( $file:expr, $content:expr, $location:expr, $error:expr ) => {{
-        let (x, y) = $crate::neum::error::get_loc($content.clone(), $location.start)
+        let (x, y) = $crate::error::get_loc($content.clone(), $location.start)
             .unwrap_or_else(|| $crate::error!("{} {}", $error, $file));
-        let line = $crate::neum::error::get_line($content, y - 1)
+        let line = $crate::error::get_line($content, y - 1)
             .unwrap_or_else(|| $crate::error!("{} {}", $error, $file));
         eprintln!("Error: {} {}:{}:{}", $error, $file, y, x);
         eprintln!("{line}");

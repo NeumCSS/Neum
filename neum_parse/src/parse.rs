@@ -1,13 +1,13 @@
 use crate::file_error;
-use crate::neum::lexer::Token;
+use crate::lexer::Token;
 use regex::Regex;
 use std::collections::HashMap;
 use std::ops::Range;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Name {
-    regex: Regex,
-    variables: Vec<String>,
+    pub regex: Regex,
+    pub variables: Vec<String>,
 }
 
 pub fn parse(
