@@ -1,0 +1,13 @@
+// Width
+
+.w-{}% => width: "{}%"
+.w-{x}/{y} => width: "{x/y}"
+.w-{} => width: "{*0.25}rem"
+.w-{}px => width: "{}px"
+
+// Max Width
+
+.mw-{}% => max-width: "{}%"
+.mw-{x}/{y} => max-width: "{x/y}"
+.mw-{} => max-width: "{*.025}rem"
+.mw-{}px => max-width: "{}px"
