@@ -1,7 +1,7 @@
 use logos::Logos;
 use std::ops::Range;
 
-use crate::file_error;
+use crate::error::{ErrorType, NeumError};
 
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub enum Token {
@@ -56,50 +56,49 @@ pub enum Token {
     String(String),
 }
 
-pub fn lex(file: String, content: String) -> Vec<(Token, Range<usize>)> {
+pub fn lex(file: Option<String>, content: String) -> Result<Vec<(Token, Range<usize>)>, NeumError> {
     let mut multi_line_comment_number = 0;
     let mut needs_nl = false;
-    Token::lexer(&content.clone())
-        .spanned()
-        .filter(|(token, location)| {
-            // multiline comments
+    let tokens = Token::lexer(&content).spanned();
+    let mut new_tokens = Vec::new();
+    for (token, location) in tokens {
+        // multiline comments
 
-            if token == &Token::StartMultiLineComment {
-                multi_line_comment_number += 1;
-            } else if token == &Token::EndMultiLineComment {
-                if multi_line_comment_number == 0 {
-                    file_error!(
-                        file.clone(),
-                        content.clone(),
-                        location.clone(),
-                        "No starting multiline comment"
-                    );
-                }
-                multi_line_comment_number -= 1;
-            }
-
-            // Error
-            if token == &Token::Error {
-                file_error!(
+        if token == Token::StartMultiLineComment {
+            multi_line_comment_number += 1;
+        } else if token == Token::EndMultiLineComment {
+            if multi_line_comment_number == 0 {
+                return Err(NeumError::new(
+                    ErrorType::NoStartingMultiComment,
                     file.clone(),
                     content.clone(),
                     location.clone(),
-                    "Unkown token"
-                );
+                ));
             }
+            multi_line_comment_number -= 1;
+        }
 
-            // Multipul NewLines
-            let nl_needed = token == &Token::NewLine && !needs_nl;
-            needs_nl = matches!(
-                token,
-                Token::String(_)
-                    | Token::ReplacementStart
-                    | Token::ReplacementEnd
-                    | Token::Number(_)
-            );
+        // Error
+        if token == Token::Error {
+            return Err(NeumError::new(
+                ErrorType::UnexpectedToken,
+                file.clone(),
+                content.clone(),
+                location.clone(),
+            ));
+        }
 
-            // End
-            multi_line_comment_number == 0 && !nl_needed
-        })
-        .collect::<Vec<_>>()
+        // Multipul NewLines
+        let nl_needed = token == Token::NewLine && !needs_nl;
+        needs_nl = matches!(
+            token,
+            Token::String(_) | Token::ReplacementStart | Token::ReplacementEnd | Token::Number(_)
+        );
+
+        // End
+        if multi_line_comment_number == 0 && !nl_needed {
+            new_tokens.push((token, location));
+        }
+    }
+    Ok(new_tokens)
 }

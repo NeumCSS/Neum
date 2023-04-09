@@ -1,25 +1,83 @@
-#[macro_export]
-macro_rules! error {
-    ( $( $x:expr ),* ) => {
-        {
-            eprintln!("Error: {}",format!($($x,)*));
-            std::process::exit(1);
-        }
-    };
+use std::fmt;
+use std::ops::Range;
+
+#[derive(Debug)]
+pub enum ErrorType {
+    UnexpectedEndOfFile,
+    UnexpectedToken,
+    NoStartingMultiComment,
+    VariableMultiDefine,
 }
 
-#[macro_export]
-macro_rules! file_error {
-    ( $file:expr, $content:expr, $location:expr, $error:expr ) => {{
-        let (x, y) = $crate::error::get_loc($content.clone(), $location.start)
-            .unwrap_or_else(|| $crate::error!("{} {}", $error, $file));
-        let line = $crate::error::get_line($content, y - 1)
-            .unwrap_or_else(|| $crate::error!("{} {}", $error, $file));
-        eprintln!("Error: {} {}:{}:{}", $error, $file, y, x);
-        eprintln!("{line}");
-        eprintln!("{}{}", " ".repeat(x), "^".repeat($location.len()));
-        std::process::exit(1);
-    }};
+pub struct NeumError {
+    error_type: ErrorType,
+    file: Option<String>,
+    x: usize,
+    y: usize,
+    line: String,
+    length: usize,
+}
+
+impl fmt::Display for NeumError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(
+            f,
+            "Error: {:?} {}:{}:{}\n{}\n{}{}",
+            self.error_type,
+            match &self.file {
+                Some(x) => x,
+                None => "",
+            },
+            self.y,
+            self.x,
+            self.line,
+            " ".repeat(self.x),
+            "^".repeat(self.length)
+        )?;
+        Ok(())
+    }
+}
+
+impl fmt::Debug for NeumError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(
+            f,
+            "Error: {:?} {}:{}:{}\n{}\n{}{}",
+            self.error_type,
+            match &self.file {
+                Some(x) => x,
+                None => "",
+            },
+            self.y,
+            self.x,
+            self.line,
+            " ".repeat(self.x),
+            "^".repeat(self.length)
+        )?;
+        Ok(())
+    }
+}
+
+impl NeumError {
+    pub fn new(
+        error_type: ErrorType,
+        file: Option<String>,
+        content: String,
+        location: Range<usize>,
+    ) -> NeumError {
+        let (x, y) = get_loc(content.clone(), location.start)
+            .expect("Should never fail unless there is a internal error");
+        let line =
+            get_line(content, y - 1).expect("Should never fail unless there is a internal error");
+        NeumError {
+            error_type,
+            file,
+            x,
+            y,
+            line,
+            length: location.len(),
+        }
+    }
 }
 
 pub fn get_loc(content: String, location: usize) -> Option<(usize, usize)> {

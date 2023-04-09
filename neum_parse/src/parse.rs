@@ -1,9 +1,10 @@
-use crate::file_error;
+use crate::error::{ErrorType, NeumError};
 use crate::lexer::Token;
 use regex::Regex;
 use std::collections::HashMap;
 use std::ops::Range;
 
+#[doc(hidden)]
 #[derive(Debug, Clone)]
 pub struct Name {
     pub regex: Regex,
@@ -12,9 +13,9 @@ pub struct Name {
 
 pub fn parse(
     tokens: Vec<(Token, Range<usize>)>,
-    file: String,
+    file: Option<String>,
     content: String,
-) -> Vec<(Name, Vec<Token>)> {
+) -> Result<Vec<(Name, Vec<Token>)>, NeumError> {
     let mut list = Vec::new();
     let mut token = tokens.iter();
     while let Some(next) = token.next() {
@@ -35,88 +36,91 @@ pub fn parse(
                 let mut regex = "^".to_string();
                 let mut name_iter = name.iter();
                 while let Some(i) = name_iter.next() {
-                    regex.push_str(
-                        match &i.0 {
-                            Token::ReplacementStart => {
-                                let next = name_iter.next().unwrap_or_else(|| {
-                                    file_error!(
+                    let value = match &i.0 {
+                        Token::ReplacementStart => {
+                            let next = name_iter
+                                .next()
+                                .ok_or(NeumError::new(
+                                    ErrorType::UnexpectedEndOfFile,
+                                    file.clone(),
+                                    content.clone(),
+                                    i.1.end..i.1.end + 1,
+                                ))?
+                                .clone();
+                            if let Token::String(x) = &next.0 {
+                                if variables.contains(&x) {
+                                    return Err(NeumError::new(
+                                        ErrorType::VariableMultiDefine,
                                         file,
-                                        content.clone(),
-                                        i.1.end..i.1.end + 1,
-                                        "Unexpected end of file"
-                                    )
-                                });
-                                if let Token::String(x) = &next.0 {
-                                    if variables.contains(x) {
-                                        file_error!(
-                                            file,
-                                            content.clone(),
-                                            next.1,
-                                            "Cant have 2 varibales that have the same name"
-                                        )
-                                    }
-                                    variables.push(x.to_string());
-                                    let next_name = name_iter.next().unwrap_or_else(|| {
-                                        file_error!(
-                                            file,
-                                            content.clone(),
-                                            next.1.end..next.1.end + 1,
-                                            "Unexpected end of file"
-                                        )
-                                    });
-                                    if next_name.0 != Token::ReplacementEnd {
-                                        file_error!(
-                                            file,
-                                            content.clone(),
-                                            next_name.1,
-                                            "Unexpected token in name"
-                                        );
-                                    }
-                                } else if Token::ReplacementEnd == next.0 {
-                                    if variables.contains(&"".to_string()) {
-                                        file_error!(
-                                            file,
-                                            content.clone(),
-                                            next.1,
-                                            "Cant have 2 varibales that have the same name"
-                                        )
-                                    }
-                                    variables.push("".to_string())
-                                } else {
-                                    file_error!(
-                                        file,
+                                        content,
+                                        next.1,
+                                    ));
+                                }
+                                variables.push(x.to_string());
+                                let next_name = name_iter.next().ok_or(NeumError::new(
+                                    ErrorType::UnexpectedToken,
+                                    file.clone(),
+                                    content.clone(),
+                                    next.clone().1,
+                                ))?;
+                                if next_name.0 != Token::ReplacementEnd {
+                                    return Err(NeumError::new(
+                                        ErrorType::UnexpectedToken,
+                                        file.clone(),
                                         content.clone(),
                                         next.1,
-                                        "Unexpected token, expected a string"
-                                    )
+                                    ));
                                 }
-
-                                "(.*)".to_string()
+                            } else if Token::ReplacementEnd == next.0 {
+                                if variables.contains(&"".to_string()) {
+                                    return Err(NeumError::new(
+                                        ErrorType::VariableMultiDefine,
+                                        file,
+                                        content,
+                                        next.1,
+                                    ));
+                                }
+                                variables.push("".to_string())
+                            } else {
+                                return Err(NeumError::new(
+                                    ErrorType::UnexpectedToken,
+                                    file,
+                                    content.clone(),
+                                    next.1,
+                                ));
                             }
-                            Token::Add => "+".to_string(),
-                            Token::Subtract => r"\-".to_string(),
-                            Token::Times => r"\*".to_string(),
-                            Token::Divide => "/".to_string(),
-                            Token::Number(x) => regex::escape(x.to_string().as_str()),
-                            Token::String(x) => regex::escape(x),
-                            _ => file_error!(file, content, i.1, "Unexpected token in name"),
+
+                            Ok("(.*)".to_string())
                         }
-                        .as_str(),
-                    );
+                        Token::Add => Ok("+".to_string()),
+                        Token::Subtract => Ok(r"\-".to_string()),
+                        Token::Times => Ok(r"\*".to_string()),
+                        Token::Divide => Ok("/".to_string()),
+                        Token::Number(x) => Ok(regex::escape(x.to_string().as_str())),
+                        Token::String(x) => Ok(regex::escape(x)),
+                        _ => Err(NeumError::new(
+                            ErrorType::UnexpectedToken,
+                            file.clone(),
+                            content.clone(),
+                            i.clone().1,
+                        )),
+                    };
+                    match value {
+                        Ok(x) => regex.push_str(x.as_str()),
+                        Err(x) => return Err(x),
+                    }
                 }
 
                 regex.push('$');
 
                 let first = &token
                     .next()
-                    .unwrap_or_else(|| {
-                        file_error!(
-                            file,
-                            content.clone(),
-                            last.1.end..last.1.end + 1,
-                            "Unexpected end of file"
-                        )
-                    })
+                    .ok_or(NeumError::new(
+                        ErrorType::UnexpectedEndOfFile,
+                        file.clone(),
+                        content.clone(),
+                        last.1.end..last.1.end + 1,
+                    ))?
                     .0;
                 let mut convert_to = Vec::new();
                 let go_to = match first {
@@ -143,7 +147,12 @@ pub fn parse(
                                 | Token::SemiColon
                                 | Token::NewLine
                         ) {
-                            file_error!(file, content, i.1, "Unexpected token in converts to");
+                            return Err(NeumError::new(
+                                ErrorType::UnexpectedToken,
+                                file,
+                                content.clone(),
+                                i.clone().1,
+                            ));
                         }
                         convert_to.push(i.0.clone());
                     } else {
@@ -152,12 +161,12 @@ pub fn parse(
                     }
                 }
                 if !broke {
-                    file_error!(
+                    return Err(NeumError::new(
+                        ErrorType::UnexpectedEndOfFile,
                         file,
                         content.clone(),
                         last.1.end..last.1.end + 1,
-                        "Unexpected end of file"
-                    )
+                    ));
                 }
                 list.push((
                     Name {
@@ -169,11 +178,16 @@ pub fn parse(
                 ));
             }
             _ => {
-                file_error!(file, content, next.1, "Unexpected Token");
+                return Err(NeumError::new(
+                    ErrorType::UnexpectedToken,
+                    file,
+                    content.clone(),
+                    next.clone().1,
+                ));
             }
         }
     }
-    list
+    Ok(list)
 }
 
 pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: String) -> Option<String> {
@@ -213,6 +227,7 @@ pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: String) -> Option<String
                                 })).clone().to_string()
                             } else {
                                 let mut next_value = false;
+                                println!("{:?}", next);
                                 let value = match next {
                                     Token::String(w) => (*variables.get(w).unwrap_or_else(|| {
                                         panic!("Internal Error\nCould not find variable \"{}\" in {:?}", w, i.1)})).to_string().clone(),

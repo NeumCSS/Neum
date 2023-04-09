@@ -21,7 +21,13 @@ fn main() {
             let file = i.path().display().to_string();
             let content = std::fs::read_to_string(file.clone())
                 .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
-            for i in parse::parse(lexer::lex(file.clone(), content.clone()), file, content) {
+            for i in parse::parse(
+                lexer::lex(Some(file.clone()), content.clone()).unwrap(),
+                Some(file),
+                content,
+            )
+            .unwrap()
+            {
                 total.push(i.clone());
             }
         }

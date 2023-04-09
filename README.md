@@ -5,5 +5,5 @@
 # Install
 
 ``` sh
-cargo install --git https://github.com/AMTitan/Neum.git
+cargo install neum
 ```
