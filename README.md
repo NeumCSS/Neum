@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="assets/logo.svg" alt="neum">
+    <img src="https://raw.githubusercontent.com/AMTitan/Neum/master/assets/logo.svg" alt="neum">
 </p>
 
 # Install
