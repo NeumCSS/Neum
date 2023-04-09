@@ -95,7 +95,7 @@ pub fn lex(file: String, content: String) -> Vec<(Token, Range<usize>)> {
                 Token::ReplacementStart => true,
                 Token::ReplacementEnd => true,
                 Token::Number(_) => true,
-                _ => false
+                _ => false,
             };
 
             // End

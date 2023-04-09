@@ -31,14 +31,15 @@ pub fn parse(
                             last.1.end..last.1.end + 2,
                             "Unexpected end of file"
                         )
-                    }).0;
+                    })
+                    .0;
                 let mut convert_to = Vec::new();
                 let go_to = match first {
                     Token::MultiEqualStart => Token::MultiEqualEnd,
                     _ => {
                         convert_to.push(first.clone());
                         Token::NewLine
-                    },
+                    }
                 };
                 let mut broke = false;
                 while let Some(i) = token.next() {
