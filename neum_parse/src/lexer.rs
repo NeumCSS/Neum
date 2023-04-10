@@ -56,10 +56,14 @@ pub enum Token {
     String(String),
 }
 
-pub fn lex(file: Option<String>, content: String) -> Result<Vec<(Token, Range<usize>)>, NeumError> {
+pub fn lex<'a>(
+    file: Option<&'a str>,
+    content: &'a str,
+) -> Result<Vec<(Token, Range<usize>)>, NeumError<'a>> {
     let mut multi_line_comment_number = 0;
     let mut needs_nl = false;
-    let tokens = Token::lexer(&content).spanned();
+    let new_content = format!("{content}\n");
+    let tokens = Token::lexer(&new_content).spanned();
     let mut new_tokens = Vec::new();
     for (token, location) in tokens {
         // multiline comments
@@ -70,9 +74,9 @@ pub fn lex(file: Option<String>, content: String) -> Result<Vec<(Token, Range<us
             if multi_line_comment_number == 0 {
                 return Err(NeumError::new(
                     ErrorType::NoStartingMultiComment,
-                    file.clone(),
-                    content.clone(),
-                    location.clone(),
+                    file,
+                    content,
+                    location,
                 ));
             }
             multi_line_comment_number -= 1;
@@ -82,9 +86,9 @@ pub fn lex(file: Option<String>, content: String) -> Result<Vec<(Token, Range<us
         if token == Token::Error {
             return Err(NeumError::new(
                 ErrorType::UnexpectedToken,
-                file.clone(),
-                content.clone(),
-                location.clone(),
+                file,
+                content,
+                location,
             ));
         }
 

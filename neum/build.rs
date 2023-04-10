@@ -22,9 +22,9 @@ fn main() {
             let content = std::fs::read_to_string(file.clone())
                 .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
             for i in parse::parse(
-                lexer::lex(Some(file.clone()), content.clone()).unwrap(),
-                Some(file),
-                content,
+                lexer::lex(Some(&file.clone()), &content.clone()).unwrap(),
+                Some(&file),
+                &content,
             )
             .unwrap()
             {
@@ -59,10 +59,18 @@ fn main() {
     }
     writeln!(
         &mut file,
-        "use neum_parse::{{parse::{{*}}, lexer::{{*, Token::*}}}};
+        "use neum_parse::{{parse::{{*}}, lexer::Token::*}};
 use regex::Regex;
-lazy_static::lazy_static!{{
-    pub static ref VALUES: Vec<(Name, Vec<Token>)> = vec![{text}];
+
+impl Default for Neum {{
+    /// A Neum object with the default values
+    /// ```no_run
+    /// # use neum::Neum;
+    /// assert_eq!(Neum::default().convert(\".w-50%\"), Some(String::from(\"width:50%;\")));
+    /// ```
+    fn default() -> Self {{
+        Neum {{ converts: vec![{text}] }}
+    }}
 }}"
     )
     .expect("Cant write to file");

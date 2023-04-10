@@ -11,11 +11,11 @@ pub struct Name {
     pub variables: Vec<String>,
 }
 
-pub fn parse(
+pub fn parse<'a>(
     tokens: Vec<(Token, Range<usize>)>,
-    file: Option<String>,
-    content: String,
-) -> Result<Vec<(Name, Vec<Token>)>, NeumError> {
+    file: Option<&'a str>,
+    content: &'a str,
+) -> Result<Vec<(Name, Vec<Token>)>, NeumError<'a>> {
     let mut list = Vec::new();
     let mut token = tokens.iter();
     while let Some(next) = token.next() {
@@ -42,13 +42,13 @@ pub fn parse(
                                 .next()
                                 .ok_or(NeumError::new(
                                     ErrorType::UnexpectedEndOfFile,
-                                    file.clone(),
-                                    content.clone(),
+                                    file,
+                                    content,
                                     i.1.end..i.1.end + 1,
                                 ))?
                                 .clone();
                             if let Token::String(x) = &next.0 {
-                                if variables.contains(&x) {
+                                if variables.contains(x) {
                                     return Err(NeumError::new(
                                         ErrorType::VariableMultiDefine,
                                         file,
@@ -59,15 +59,15 @@ pub fn parse(
                                 variables.push(x.to_string());
                                 let next_name = name_iter.next().ok_or(NeumError::new(
                                     ErrorType::UnexpectedToken,
-                                    file.clone(),
-                                    content.clone(),
+                                    file,
+                                    content,
                                     next.clone().1,
                                 ))?;
                                 if next_name.0 != Token::ReplacementEnd {
                                     return Err(NeumError::new(
                                         ErrorType::UnexpectedToken,
-                                        file.clone(),
-                                        content.clone(),
+                                        file,
+                                        content,
                                         next.1,
                                     ));
                                 }
@@ -85,7 +85,7 @@ pub fn parse(
                                 return Err(NeumError::new(
                                     ErrorType::UnexpectedToken,
                                     file,
-                                    content.clone(),
+                                    content,
                                     next.1,
                                 ));
                             }
@@ -100,8 +100,8 @@ pub fn parse(
                         Token::String(x) => Ok(regex::escape(x)),
                         _ => Err(NeumError::new(
                             ErrorType::UnexpectedToken,
-                            file.clone(),
-                            content.clone(),
+                            file,
+                            content,
                             i.clone().1,
                         )),
                     };
@@ -117,8 +117,8 @@ pub fn parse(
                     .next()
                     .ok_or(NeumError::new(
                         ErrorType::UnexpectedEndOfFile,
-                        file.clone(),
-                        content.clone(),
+                        file,
+                        content,
                         last.1.end..last.1.end + 1,
                     ))?
                     .0;
@@ -150,7 +150,7 @@ pub fn parse(
                             return Err(NeumError::new(
                                 ErrorType::UnexpectedToken,
                                 file,
-                                content.clone(),
+                                content,
                                 i.clone().1,
                             ));
                         }
@@ -164,7 +164,7 @@ pub fn parse(
                     return Err(NeumError::new(
                         ErrorType::UnexpectedEndOfFile,
                         file,
-                        content.clone(),
+                        content,
                         last.1.end..last.1.end + 1,
                     ));
                 }
@@ -181,7 +181,7 @@ pub fn parse(
                 return Err(NeumError::new(
                     ErrorType::UnexpectedToken,
                     file,
-                    content.clone(),
+                    content,
                     next.clone().1,
                 ));
             }
@@ -190,9 +190,9 @@ pub fn parse(
     Ok(list)
 }
 
-pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: String) -> Option<String> {
+pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: &str) -> Option<String> {
     for i in parsed {
-        if let Some(caps) = i.0.regex.captures(&input) {
+        if let Some(caps) = i.0.regex.captures(input) {
             let mut caps_iter = caps.iter();
             caps_iter.next();
             let mut variables = HashMap::new();
@@ -227,7 +227,6 @@ pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: String) -> Option<String
                                 })).clone().to_string()
                             } else {
                                 let mut next_value = false;
-                                println!("{:?}", next);
                                 let value = match next {
                                     Token::String(w) => (*variables.get(w).unwrap_or_else(|| {
                                         panic!("Internal Error\nCould not find variable \"{}\" in {:?}", w, i.1)})).to_string().clone(),

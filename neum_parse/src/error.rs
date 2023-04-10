@@ -9,16 +9,16 @@ pub enum ErrorType {
     VariableMultiDefine,
 }
 
-pub struct NeumError {
+pub struct NeumError<'a> {
     error_type: ErrorType,
-    file: Option<String>,
+    file: Option<&'a str>,
     x: usize,
     y: usize,
     line: String,
     length: usize,
 }
 
-impl fmt::Display for NeumError {
+impl fmt::Display for NeumError<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(
             f,
@@ -38,7 +38,7 @@ impl fmt::Display for NeumError {
     }
 }
 
-impl fmt::Debug for NeumError {
+impl fmt::Debug for NeumError<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(
             f,
@@ -58,14 +58,14 @@ impl fmt::Debug for NeumError {
     }
 }
 
-impl NeumError {
-    pub fn new(
+impl NeumError<'_> {
+    pub fn new<'a>(
         error_type: ErrorType,
-        file: Option<String>,
-        content: String,
+        file: Option<&'a str>,
+        content: &'a str,
         location: Range<usize>,
-    ) -> NeumError {
-        let (x, y) = get_loc(content.clone(), location.start)
+    ) -> NeumError<'a> {
+        let (x, y) = get_loc(content, location.start)
             .expect("Should never fail unless there is a internal error");
         let line =
             get_line(content, y - 1).expect("Should never fail unless there is a internal error");
@@ -80,7 +80,7 @@ impl NeumError {
     }
 }
 
-pub fn get_loc(content: String, location: usize) -> Option<(usize, usize)> {
+pub fn get_loc(content: &str, location: usize) -> Option<(usize, usize)> {
     let mut y = 0;
     let mut current = 0;
     for line in content.split('\n') {
@@ -94,6 +94,6 @@ pub fn get_loc(content: String, location: usize) -> Option<(usize, usize)> {
     None
 }
 
-pub fn get_line(content: String, line: usize) -> Option<String> {
+pub fn get_line(content: &str, line: usize) -> Option<String> {
     Some(content.lines().nth(line)?.to_string())
 }
