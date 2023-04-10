@@ -57,10 +57,32 @@ impl Neum {
         content: &'a str,
         file: Option<&'a str>,
     ) -> Result<(), error::NeumError<'a>> {
-        let neum = Neum::new(content, file)?;
-        for i in neum.converts {
-            self.converts.push(i);
-        }
+        let mut neum = Neum::new(content, file)?;
+        self.converts.append(&mut neum.converts);
+        Ok(())
+    }
+    
+    /// Add some more Neum definitions to your Neum object, this will also add your item to the heighest priority
+    /// ```
+    /// # use neum_parse::*;
+    /// let mut neum = Neum::new(".w-{} => width: {}px", None).unwrap();
+    /// neum.add(".w-{}% => width: {}%", None).unwrap();
+    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%px;")));
+    ///
+    /// let mut neum = Neum::new(".w-{} => width: {}px", None).unwrap();
+    /// neum.add_priority(".w-{}% => width: {}%", None).unwrap();
+    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%;")));
+    /// ```
+    pub fn add_priority<'a>(
+        &mut self,
+        content: &'a str,
+        file: Option<&'a str>,
+    ) -> Result<(), error::NeumError<'a>> {
+        let mut neum = Neum::new(content, file)?;
+        neum.converts.append(&mut self.converts);
+        self.converts = neum.converts;
         Ok(())
     }
 }
