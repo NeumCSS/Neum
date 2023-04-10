@@ -1,6 +1,7 @@
 use std::string::String;
 
 /// This is a Neum converter object
+#[derive(Debug)]
 pub struct Neum {
     #[doc(hidden)]
     pub converts: Vec<(parse::Name, Vec<lexer::Token>)>,
@@ -84,5 +85,64 @@ impl Neum {
         neum.converts.append(&mut self.converts);
         self.converts = neum.converts;
         Ok(())
+    }
+
+    /// Returns a empty Neum type with nothing defined
+    pub fn empty() -> Neum {
+        Neum {
+            converts: Vec::new()
+        }
+    }
+
+    /// Combine two Neum items, the first item has priority over the others
+    /// ```no_run
+    /// # use neum_parse::*;
+    /// # use std::fs;
+    /// let file = "width.neum";
+    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    ///
+    /// let file = "height.neum";
+    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    ///
+    /// // Note that file_two is going to have less priority to file_one
+    /// let neum = Neum::empty().combine(file_one).combine(file_two);
+    ///
+    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert(".h-5"), Some(String::from("height:5px;")));
+    /// ```
+    pub fn combine(
+        self,
+        neum: Neum,
+    ) -> Neum {
+        let mut neum_clone = neum.converts;
+        let mut self_clone = self.converts;
+        self_clone.append(&mut neum_clone);
+        Neum{converts:self_clone}
+    }
+
+    /// Combine two Neum items, the first item has priority over the others
+    /// ```no_run
+    /// # use neum_parse::*;
+    /// # use std::fs;
+    /// let file = "width.neum";
+    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    ///
+    /// let file = "height.neum";
+    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    ///
+    /// // Note that file_two is going to have more priority to file_one
+    /// let neum = Neum::empty().combine(file_one).combine_priority(file_two);
+    ///
+    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert(".h-5"), Some(String::from("height:5px;")));
+    /// ```
+    pub fn combine_priority(
+        self,
+        neum: Neum,
+    ) -> Neum {
+        let mut neum_clone = neum.converts;
+        let mut self_clone = self.converts;
+        neum_clone.append(&mut self_clone);
+        Neum{converts:neum_clone}
     }
 }
