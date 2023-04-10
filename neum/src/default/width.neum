@@ -13,4 +13,4 @@
     max-width: {}px
     width: {}px
 }}
-.mw-{} => max-width: { * .025}rem
+.mw-{} => max-width: {*.25}rem
