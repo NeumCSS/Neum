@@ -5,5 +5,5 @@
 # Install
 
 ``` sh
-cargo install neum
+cargo install neum-cli
 ```
