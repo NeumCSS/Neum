@@ -40,12 +40,14 @@ pub fn parse<'a>(
                         Token::ReplacementStart => {
                             let next = name_iter
                                 .next()
-                                .ok_or(NeumError::new(
-                                    ErrorType::UnexpectedEndOfFile,
-                                    file,
-                                    content,
-                                    i.1.end..i.1.end + 1,
-                                ))?
+                                .ok_or_else(|| {
+                                    NeumError::new(
+                                        ErrorType::UnexpectedEndOfFile,
+                                        file,
+                                        content,
+                                        i.1.end..i.1.end + 1,
+                                    )
+                                })?
                                 .clone();
                             if let Token::String(x) = &next.0 {
                                 if variables.contains(x) {
@@ -57,12 +59,14 @@ pub fn parse<'a>(
                                     ));
                                 }
                                 variables.push(x.to_string());
-                                let next_name = name_iter.next().ok_or(NeumError::new(
-                                    ErrorType::UnexpectedToken,
-                                    file,
-                                    content,
-                                    next.clone().1,
-                                ))?;
+                                let next_name = name_iter.next().ok_or_else(|| {
+                                    NeumError::new(
+                                        ErrorType::UnexpectedToken,
+                                        file,
+                                        content,
+                                        next.clone().1,
+                                    )
+                                })?;
                                 if next_name.0 != Token::ReplacementEnd {
                                     return Err(NeumError::new(
                                         ErrorType::UnexpectedToken,
@@ -115,12 +119,14 @@ pub fn parse<'a>(
 
                 let first = &token
                     .next()
-                    .ok_or(NeumError::new(
-                        ErrorType::UnexpectedEndOfFile,
-                        file,
-                        content,
-                        last.1.end..last.1.end + 1,
-                    ))?
+                    .ok_or_else(|| {
+                        NeumError::new(
+                            ErrorType::UnexpectedEndOfFile,
+                            file,
+                            content,
+                            last.1.end..last.1.end + 1,
+                        )
+                    })?
                     .0;
                 let mut convert_to = Vec::new();
                 let go_to = match first {
