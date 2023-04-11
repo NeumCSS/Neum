@@ -9,17 +9,17 @@ pub enum ErrorType {
     VariableMultiDefine,
 }
 
-pub struct NeumError<'a> {
+pub struct NeumError {
     error_type: ErrorType,
-    file: Option<&'a str>,
+    file: Option<String>,
     x: usize,
     y: usize,
     line: String,
     length: usize,
 }
 
-impl fmt::Display for NeumError<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for NeumError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(
             f,
             "Error: {:?} {}:{}:{}\n{}\n{}{}",
@@ -38,8 +38,8 @@ impl fmt::Display for NeumError<'_> {
     }
 }
 
-impl fmt::Debug for NeumError<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for NeumError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(
             f,
             "Error: {:?} {}:{}:{}\n{}\n{}{}",
@@ -58,20 +58,20 @@ impl fmt::Debug for NeumError<'_> {
     }
 }
 
-impl NeumError<'_> {
-    pub fn new<'a>(
+impl NeumError {
+    pub fn new<S: AsRef<str>>(
         error_type: ErrorType,
-        file: Option<&'a str>,
-        content: &'a str,
+        file: Option<S>,
+        content: S,
         location: Range<usize>,
-    ) -> NeumError<'a> {
-        let (x, y) = get_loc(content, location.start)
+    ) -> NeumError {
+        let (x, y) = get_loc(content.as_ref(), location.start)
             .expect("Should never fail unless there is a internal error");
         let line =
-            get_line(content, y - 1).expect("Should never fail unless there is a internal error");
+            get_line(content.as_ref(), y - 1).expect("Should never fail unless there is a internal error");
         NeumError {
             error_type,
-            file,
+            file: file.map_or(None, |x| Some(x.as_ref().to_string())),
             x,
             y,
             line,

@@ -13,8 +13,9 @@ impl Neum {
     /// # use neum_parse::*;
     /// let neum = Neum::new(".w-{} => width: {}px", None).unwrap(); // the file is just for error handling
     /// ```
-    pub fn new<'a>(content: &'a str, file: Option<&'a str>) -> Result<Neum, error::NeumError<'a>> {
-        let converts = parse::parse(lexer::lex(file, content)?, file, content)?;
+    pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
+        let file = file.map_or(None, |x| Some(x.as_ref().to_string()));
+        let converts = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
         Ok(Neum { converts })
     }
 
@@ -38,8 +39,8 @@ impl Neum {
     /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%px;")));
     /// ```
-    pub fn convert(&self, input: &str) -> Option<String> {
-        parse::converts(self.converts.clone(), input)
+    pub fn convert<S: AsRef<str>>(&self, input: S) -> Option<String> {
+        parse::converts(self.converts.clone(), input.as_ref())
     }
 
     /// Add some more Neum definitions to your Neum object, this will also add your item to the lowest priority
@@ -53,11 +54,11 @@ impl Neum {
     /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert(".mw-5"), Some(String::from("max-width:5px;")));
     /// ```
-    pub fn add<'a>(
+    pub fn add<S: AsRef<str> + std::fmt::Display>(
         &mut self,
-        content: &'a str,
-        file: Option<&'a str>,
-    ) -> Result<(), error::NeumError<'a>> {
+        content: S,
+        file: Option<S>,
+    ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
         self.converts.append(&mut neum.converts);
         Ok(())
@@ -76,11 +77,11 @@ impl Neum {
     /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%;")));
     /// ```
-    pub fn add_priority<'a>(
+    pub fn add_priority<S: AsRef<str> + std::fmt::Display>(
         &mut self,
-        content: &'a str,
-        file: Option<&'a str>,
-    ) -> Result<(), error::NeumError<'a>> {
+        content: S,
+        file: Option<S>,
+    ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
         neum.converts.append(&mut self.converts);
         self.converts = neum.converts;
@@ -99,10 +100,10 @@ impl Neum {
     /// # use neum_parse::*;
     /// # use std::fs;
     /// let file = "width.neum";
-    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
     ///
     /// let file = "height.neum";
-    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
     ///
     /// // Note that file_two is going to have less priority to file_one
     /// let neum = Neum::empty().combine(file_one).combine(file_two);
@@ -125,10 +126,10 @@ impl Neum {
     /// # use neum_parse::*;
     /// # use std::fs;
     /// let file = "width.neum";
-    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
     ///
     /// let file = "height.neum";
-    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(file)).unwrap();
+    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
     /// let neum = Neum::empty().combine(file_one).combine_priority(file_two);

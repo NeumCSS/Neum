@@ -11,11 +11,12 @@ pub struct Name {
     pub variables: Vec<String>,
 }
 
-pub fn parse<'a>(
+pub fn parse<S: AsRef<str>>(
     tokens: Vec<(Token, Range<usize>)>,
-    file: Option<&'a str>,
-    content: &'a str,
-) -> Result<Vec<(Name, Vec<Token>)>, NeumError<'a>> {
+    file: Option<S>,
+    content: S,
+) -> Result<Vec<(Name, Vec<Token>)>, NeumError> {
+    let file = file.map_or(None, |x| Some(x.as_ref().to_string()));
     let mut list = Vec::new();
     let mut token = tokens.iter();
     while let Some(next) = token.next() {
@@ -43,8 +44,8 @@ pub fn parse<'a>(
                                 .ok_or_else(|| {
                                     NeumError::new(
                                         ErrorType::UnexpectedEndOfFile,
-                                        file,
-                                        content,
+                                        file.clone(),
+                                        content.as_ref().to_string(),
                                         i.1.end..i.1.end + 1,
                                     )
                                 })?
@@ -53,8 +54,8 @@ pub fn parse<'a>(
                                 if variables.contains(x) {
                                     return Err(NeumError::new(
                                         ErrorType::VariableMultiDefine,
-                                        file,
-                                        content,
+                                        file.clone(),
+                                        content.as_ref().to_string(),
                                         next.1,
                                     ));
                                 }
@@ -62,16 +63,16 @@ pub fn parse<'a>(
                                 let next_name = name_iter.next().ok_or_else(|| {
                                     NeumError::new(
                                         ErrorType::UnexpectedToken,
-                                        file,
-                                        content,
+                                        file.clone(),
+                                        content.as_ref().to_string(),
                                         next.clone().1,
                                     )
                                 })?;
                                 if next_name.0 != Token::ReplacementEnd {
                                     return Err(NeumError::new(
                                         ErrorType::UnexpectedToken,
-                                        file,
-                                        content,
+                                        file.clone(),
+                                        content.as_ref().to_string(),
                                         next.1,
                                     ));
                                 }
@@ -79,8 +80,8 @@ pub fn parse<'a>(
                                 if variables.contains(&"".to_string()) {
                                     return Err(NeumError::new(
                                         ErrorType::VariableMultiDefine,
-                                        file,
-                                        content,
+                                        file.clone(),
+                                        content.as_ref().to_string(),
                                         next.1,
                                     ));
                                 }
@@ -88,8 +89,8 @@ pub fn parse<'a>(
                             } else {
                                 return Err(NeumError::new(
                                     ErrorType::UnexpectedToken,
-                                    file,
-                                    content,
+                                    file.clone(),
+                                    content.as_ref().to_string(),
                                     next.1,
                                 ));
                             }
@@ -104,8 +105,8 @@ pub fn parse<'a>(
                         Token::String(x) => Ok(regex::escape(x)),
                         _ => Err(NeumError::new(
                             ErrorType::UnexpectedToken,
-                            file,
-                            content,
+                            file.clone(),
+                            content.as_ref().to_string(),
                             i.clone().1,
                         )),
                     };
@@ -122,8 +123,8 @@ pub fn parse<'a>(
                     .ok_or_else(|| {
                         NeumError::new(
                             ErrorType::UnexpectedEndOfFile,
-                            file,
-                            content,
+                            file.clone(),
+                            content.as_ref().to_string(),
                             last.1.end..last.1.end + 1,
                         )
                     })?
@@ -156,7 +157,7 @@ pub fn parse<'a>(
                             return Err(NeumError::new(
                                 ErrorType::UnexpectedToken,
                                 file,
-                                content,
+                                content.as_ref().to_string(),
                                 i.clone().1,
                             ));
                         }
@@ -170,7 +171,7 @@ pub fn parse<'a>(
                     return Err(NeumError::new(
                         ErrorType::UnexpectedEndOfFile,
                         file,
-                        content,
+                        content.as_ref().to_string(),
                         last.1.end..last.1.end + 1,
                     ));
                 }
@@ -187,7 +188,7 @@ pub fn parse<'a>(
                 return Err(NeumError::new(
                     ErrorType::UnexpectedToken,
                     file,
-                    content,
+                    content.as_ref().to_string(),
                     next.clone().1,
                 ));
             }
@@ -196,9 +197,9 @@ pub fn parse<'a>(
     Ok(list)
 }
 
-pub fn converts(parsed: Vec<(Name, Vec<Token>)>, input: &str) -> Option<String> {
+pub fn converts<S: AsRef<str> + std::fmt::Display>(parsed: Vec<(Name, Vec<Token>)>, input: S) -> Option<String> {
     for i in parsed {
-        if let Some(caps) = i.0.regex.captures(input) {
+        if let Some(caps) = i.0.regex.captures(input.as_ref()) {
             let mut caps_iter = caps.iter();
             caps_iter.next();
             let mut variables = HashMap::new();

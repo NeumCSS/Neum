@@ -56,10 +56,10 @@ pub enum Token {
     String(String),
 }
 
-pub fn lex<'a>(
-    file: Option<&'a str>,
-    content: &'a str,
-) -> Result<Vec<(Token, Range<usize>)>, NeumError<'a>> {
+pub fn lex<S: AsRef<str> + std::fmt::Display>(
+    file: Option<S>,
+    content: S,
+) -> Result<Vec<(Token, Range<usize>)>, NeumError> {
     let mut multi_line_comment_number = 0;
     let mut needs_nl = false;
     let new_content = format!("{content}\n");
