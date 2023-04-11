@@ -11,7 +11,7 @@ impl Neum {
     /// Creates a new Neum converter object
     /// ```
     /// # use neum_parse::*;
-    /// let neum = Neum::new(".w-{} => width: {}px", None).unwrap(); // the file is just for error handling
+    /// let neum = Neum::new("w-{} => width: {}px", None).unwrap(); // the file is just for error handling
     /// ```
     pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
         let file = file.map_or(None, |x| Some(x.as_ref().to_string()));
@@ -22,22 +22,22 @@ impl Neum {
     /// Takes your current Neum object and finds your input and gives the output
     /// ```
     /// # use neum_parse::*;
-    /// let neum = Neum::new(".w-{} => width: {}px", None).unwrap();
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".mw-5"), None);
+    /// let neum = Neum::new("w-{} => width: {}px", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("mw-5"), None);
     /// ```
     /// This will also match the first item it gets
     /// ```
     /// # use neum_parse::*;
-    /// let mut neum = Neum::new(".w-{}% => width: {}%", None).unwrap();
-    /// neum.add(".w-{} => width: {}px", None).unwrap();
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%;")));
+    /// let mut neum = Neum::new("w-{}% => width: {}%", None).unwrap();
+    /// neum.add("w-{} => width: {}px", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%;")));
     ///
-    /// let mut neum = Neum::new(".w-{} => width: {}px", None).unwrap();
-    /// neum.add(".w-{}% => width: {}%", None).unwrap();
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%px;")));
+    /// let mut neum = Neum::new("w-{} => width: {}px", None).unwrap();
+    /// neum.add("w-{}% => width: {}%", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%px;")));
     /// ```
     pub fn convert<S: AsRef<str>>(&self, input: S) -> Option<String> {
         parse::converts(self.converts.clone(), input.as_ref())
@@ -46,13 +46,13 @@ impl Neum {
     /// Add some more Neum definitions to your Neum object, this will also add your item to the lowest priority
     /// ```
     /// # use neum_parse::*;
-    /// let mut neum = Neum::new(".w-{} => width: {}px", None).unwrap();
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".mw-5"), None);
+    /// let mut neum = Neum::new("w-{} => width: {}px", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("mw-5"), None);
     ///
-    /// neum.add(".mw-{} => max-width: {}px", None).unwrap();
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".mw-5"), Some(String::from("max-width:5px;")));
+    /// neum.add("mw-{} => max-width: {}px", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("mw-5"), Some(String::from("max-width:5px;")));
     /// ```
     pub fn add<S: AsRef<str> + std::fmt::Display>(
         &mut self,
@@ -67,15 +67,15 @@ impl Neum {
     /// Add some more Neum definitions to your Neum object, this will also add your item to the heighest priority
     /// ```
     /// # use neum_parse::*;
-    /// let mut neum = Neum::new(".w-{} => width: {}px", None).unwrap();
-    /// neum.add(".w-{}% => width: {}%", None).unwrap();
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%px;")));
+    /// let mut neum = Neum::new("w-{} => width: {}px", None).unwrap();
+    /// neum.add("w-{}% => width: {}%", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%px;")));
     ///
-    /// let mut neum = Neum::new(".w-{} => width: {}px", None).unwrap();
-    /// neum.add_priority(".w-{}% => width: {}%", None).unwrap();
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".w-5%"), Some(String::from("width:5%;")));
+    /// let mut neum = Neum::new("w-{} => width: {}px", None).unwrap();
+    /// neum.add_priority("w-{}% => width: {}%", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%;")));
     /// ```
     pub fn add_priority<S: AsRef<str> + std::fmt::Display>(
         &mut self,
@@ -108,8 +108,8 @@ impl Neum {
     /// // Note that file_two is going to have less priority to file_one
     /// let neum = Neum::empty().combine(file_one).combine(file_two);
     ///
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".h-5"), Some(String::from("height:5px;")));
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("h-5"), Some(String::from("height:5px;")));
     /// ```
     pub fn combine(
         self,
@@ -134,8 +134,8 @@ impl Neum {
     /// // Note that file_two is going to have more priority to file_one
     /// let neum = Neum::empty().combine(file_one).combine_priority(file_two);
     ///
-    /// assert_eq!(neum.convert(".w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert(".h-5"), Some(String::from("height:5px;")));
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("h-5"), Some(String::from("height:5px;")));
     /// ```
     pub fn combine_priority(
         self,

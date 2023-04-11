@@ -7,7 +7,7 @@
 //! let file = "width.neum".to_string(); // Used just for giving errors
 //! let content = std::fs::read_to_string(file.clone()).expect("Cant read file");
 //! let neum = Neum::new(&content, Some(&file.to_string())).unwrap();
-//! assert_eq!(neum.convert(".w-50%"), Some(String::from("width:50%;")));
+//! assert_eq!(neum.convert("w-50%"), Some(String::from("width:50%;")));
 //! ```
 
 #[doc(hidden)]

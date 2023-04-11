@@ -66,7 +66,7 @@ impl Default for Neum {{
     /// A Neum object with the default values
     /// ```no_run
     /// # use neum::Neum;
-    /// assert_eq!(Neum::default().convert(\".w-50%\"), Some(String::from(\"width:50%;\")));
+    /// assert_eq!(Neum::default().convert(\"w-50%\"), Some(String::from(\"width:50%;\")));
     /// ```
     fn default() -> Self {{
         Neum {{ converts: vec![{text}] }}
