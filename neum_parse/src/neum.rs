@@ -1,7 +1,7 @@
 use std::string::String;
 
 /// This is a Neum converter object
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Neum {
     #[doc(hidden)]
     pub converts: Vec<(parse::Name, Vec<lexer::Token>)>,

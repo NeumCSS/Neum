@@ -1,9 +1,11 @@
 mod args;
 use args::ARGS;
-
+mod html_parse;
+mod neum_parse;
 mod watcher;
+mod output;
 
 fn main() {
-    println!("{:?}", neum::Neum::default().convert(".mw-5"));
+    watcher::init();
     watcher::watch();
 }
