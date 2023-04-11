@@ -1,7 +1,9 @@
 mod args;
 use args::ARGS;
 
+mod watcher;
+
 fn main() {
-    println!("{:?}", ARGS.source_code);
     println!("{:?}", neum::Neum::default().convert(".mw-5"));
+    watcher::watch();
 }
