@@ -14,7 +14,7 @@ impl Neum {
     /// let neum = Neum::new("w-{} => width: {}px", None).unwrap(); // the file is just for error handling
     /// ```
     pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
-        let file = file.map_or(None, |x| Some(x.as_ref().to_string()));
+        let file = file.map(|x| x.as_ref().to_string());
         let converts = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
         Ok(Neum { converts })
     }

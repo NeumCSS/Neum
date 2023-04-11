@@ -71,7 +71,7 @@ impl NeumError {
             get_line(content.as_ref(), y - 1).expect("Should never fail unless there is a internal error");
         NeumError {
             error_type,
-            file: file.map_or(None, |x| Some(x.as_ref().to_string())),
+            file: file.map(|x| x.as_ref().to_string()),
             x,
             y,
             line,

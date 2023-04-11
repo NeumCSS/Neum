@@ -16,7 +16,7 @@ pub fn parse<S: AsRef<str>>(
     file: Option<S>,
     content: S,
 ) -> Result<Vec<(Name, Vec<Token>)>, NeumError> {
-    let file = file.map_or(None, |x| Some(x.as_ref().to_string()));
+    let file = file.map(|x| x.as_ref().to_string());
     let mut list = Vec::new();
     let mut token = tokens.iter();
     while let Some(next) = token.next() {
@@ -54,7 +54,7 @@ pub fn parse<S: AsRef<str>>(
                                 if variables.contains(x) {
                                     return Err(NeumError::new(
                                         ErrorType::VariableMultiDefine,
-                                        file.clone(),
+                                        file,
                                         content.as_ref().to_string(),
                                         next.1,
                                     ));
@@ -80,7 +80,7 @@ pub fn parse<S: AsRef<str>>(
                                 if variables.contains(&"".to_string()) {
                                     return Err(NeumError::new(
                                         ErrorType::VariableMultiDefine,
-                                        file.clone(),
+                                        file,
                                         content.as_ref().to_string(),
                                         next.1,
                                     ));
@@ -89,7 +89,7 @@ pub fn parse<S: AsRef<str>>(
                             } else {
                                 return Err(NeumError::new(
                                     ErrorType::UnexpectedToken,
-                                    file.clone(),
+                                    file,
                                     content.as_ref().to_string(),
                                     next.1,
                                 ));
