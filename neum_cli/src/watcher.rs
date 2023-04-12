@@ -69,10 +69,12 @@ pub fn watch() {
 pub fn init() {
     if let Some(neum_folder) = &ARGS.neum_folder {
         for e in WalkDir::new(neum_folder).into_iter().flatten() {
-            if let Some(extension) = e.path().extension() {
-                if extension == "neum" && ARGS.neum_folder.is_none() {
-                    if let Err(e) = neum_parse::update_neum(e.path().to_path_buf()) {
-                        eprintln!("{e}");
+            if !excludes(e.path().to_path_buf()) {
+                if let Some(extension) = e.path().extension() {
+                    if extension == "neum" && ARGS.neum_folder.is_none() {
+                        if let Err(e) = neum_parse::update_neum(e.path().to_path_buf()) {
+                            eprintln!("{e}");
+                        }
                     }
                 }
             }
@@ -88,14 +90,16 @@ pub fn init() {
     .into_iter()
     .flatten()
     {
-        if let Some(extension) = e.path().extension() {
-            if extension == "html" || extension == "htm" || extension == "xhtml" {
-                if html_parse::update_html(e.path().to_path_buf()).is_err() {
-                    eprintln!("Failded to parse {}", e.path().display());
-                }
-            } else if extension == "neum" && ARGS.neum_folder.is_none() {
-                if let Err(e) = neum_parse::update_neum(e.path().to_path_buf()) {
-                    eprintln!("{e}");
+        if !excludes(e.path().to_path_buf()) {
+            if let Some(extension) = e.path().extension() {
+                if extension == "html" || extension == "htm" || extension == "xhtml" {
+                    if html_parse::update_html(e.path().to_path_buf()).is_err() {
+                        eprintln!("Failded to parse {}", e.path().display());
+                    }
+                } else if extension == "neum" && ARGS.neum_folder.is_none() {
+                    if let Err(e) = neum_parse::update_neum(e.path().to_path_buf()) {
+                        eprintln!("{e}");
+                    }
                 }
             }
         }
