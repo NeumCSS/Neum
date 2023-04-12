@@ -11,6 +11,19 @@ use std::path::Path;
 
 fn main() {
     let mut total: Vec<(Name, Vec<Token>)> = Vec::new();
+    let file = "src/default/config.neum".to_string();
+    let content = fs::read_to_string(file.clone())
+        .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
+    for i in parse::parse(
+        lexer::lex(Some(&file.clone()), &content.clone()).unwrap(),
+        Some(&file),
+        &content,
+    )
+    .unwrap()
+    {
+        total.push(i.clone());
+    }
+
     let out_dir = env::var("OUT_DIR").unwrap();
     let output = Path::new(&out_dir).join("formated.rs");
     let mut file = BufWriter::new(File::create(&output).unwrap());

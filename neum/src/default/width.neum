@@ -9,6 +9,7 @@ w-screen => width: 100vw
 w-min => width: min-content
 w-max => width: max-content
 w-fit => width: fit-content
+w-sm => width: {{{var-sm}}}
 w-[{}] => width: {}
 w-{} => width: {*0.25}rem
 
