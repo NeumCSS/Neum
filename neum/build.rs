@@ -98,7 +98,8 @@ pub struct {} {{}}
                 .map(|x| format!("/// {x}"))
                 .collect::<Vec<String>>()
                 .join("\n"),
-            name[..name.len()-4].to_string()
+            name[..name.len() - 4]
+                .to_string()
                 .replace('/', " ")
                 .to_class_case()
         )
