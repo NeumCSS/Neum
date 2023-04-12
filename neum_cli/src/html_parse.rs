@@ -1,3 +1,4 @@
+use crate::output::update;
 use html_parser::{Dom, Node};
 use itertools::Itertools;
 use lazy_static::lazy_static;
@@ -5,7 +6,6 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use crate::output::update;
 
 lazy_static! {
     pub static ref HTML_FILES: Arc<Mutex<HashMap<PathBuf, Vec<String>>>> =

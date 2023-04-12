@@ -67,8 +67,8 @@ impl NeumError {
     ) -> NeumError {
         let (x, y) = get_loc(content.as_ref(), location.start)
             .expect("Should never fail unless there is a internal error");
-        let line =
-            get_line(content.as_ref(), y - 1).expect("Should never fail unless there is a internal error");
+        let line = get_line(content.as_ref(), y - 1)
+            .expect("Should never fail unless there is a internal error");
         NeumError {
             error_type,
             file: file.map(|x| x.as_ref().to_string()),

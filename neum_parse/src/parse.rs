@@ -197,7 +197,10 @@ pub fn parse<S: AsRef<str>>(
     Ok(list)
 }
 
-pub fn converts<S: AsRef<str> + std::fmt::Display>(parsed: Vec<(Name, Vec<Token>)>, input: S) -> Option<String> {
+pub fn converts<S: AsRef<str> + std::fmt::Display>(
+    parsed: Vec<(Name, Vec<Token>)>,
+    input: S,
+) -> Option<String> {
     for i in parsed {
         if let Some(caps) = i.0.regex.captures(input.as_ref()) {
             let mut caps_iter = caps.iter();

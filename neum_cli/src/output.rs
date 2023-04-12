@@ -15,7 +15,11 @@ pub fn update() {
     for i in classes {
         total_classes.append(&mut i.clone());
     }
-    total_classes = total_classes.iter().unique().cloned().collect::<Vec<String>>();
+    total_classes = total_classes
+        .iter()
+        .unique()
+        .cloned()
+        .collect::<Vec<String>>();
 
     let mut total_neum = neum::Neum::default();
 

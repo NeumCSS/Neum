@@ -1,10 +1,10 @@
+use crate::output::update;
 use lazy_static::lazy_static;
 use neum::Neum;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use crate::output::update;
 
 lazy_static! {
     pub static ref NEUM_FILES: Arc<Mutex<HashMap<PathBuf, Neum>>> =

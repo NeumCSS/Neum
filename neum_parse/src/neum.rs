@@ -1,5 +1,3 @@
-use std::string::String;
-
 /// This is a Neum converter object
 #[derive(Debug, Clone)]
 pub struct Neum {
@@ -39,7 +37,7 @@ impl Neum {
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%px;")));
     /// ```
-    pub fn convert<S: AsRef<str>>(&self, input: S) -> Option<String> {
+    pub fn convert<S: AsRef<str>>(&self, input: S) -> Option<std::string::String> {
         parse::converts(self.converts.clone(), input.as_ref())
     }
 
