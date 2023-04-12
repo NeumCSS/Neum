@@ -1,1 +1,23 @@
+// Size
+
 var-sm => 960px
+
+// Color
+
+var-navy => #001f3f
+var-blue => #0074D9
+var-aqua => #7FDBFF
+var-teal => #39CCCC
+var-purple => #B10DC9
+var-fuchsia => #F012BE
+var-maroon => #85144b
+var-red => #FF4136
+var-orange => #FF851B
+var-yellow => #FFDC00
+var-olive => #3D9970
+var-green => #2ECC40
+var-lime => #01FF70
+var-black => #111111
+var-gray => #AAAAAA
+var-silver => #DDDDDD
+var-white => #FFFFFF

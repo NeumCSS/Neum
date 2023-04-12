@@ -236,9 +236,11 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                                     break;
                                 }
                                 search.push_str(&match x {
-                                    Token::ReplacementStart => {
-                                        replacement(&mut returns_iter, variables.clone(), &i.clone())
-                                    }
+                                    Token::ReplacementStart => replacement(
+                                        &mut returns_iter,
+                                        variables.clone(),
+                                        &i.clone(),
+                                    ),
                                     Token::Add => "+".to_string(),
                                     Token::Subtract => r"\-".to_string(),
                                     Token::Times => r"\*".to_string(),
@@ -255,7 +257,9 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                             chars.next_back();
                             chars.as_str().to_string()
                         }
-                        Token::ReplacementStart => replacement(&mut returns_iter, variables.clone(), i),
+                        Token::ReplacementStart => {
+                            replacement(&mut returns_iter, variables.clone(), i)
+                        }
                         Token::Add => "+".to_string(),
                         Token::Subtract => r"\-".to_string(),
                         Token::Times => r"\*".to_string(),

@@ -102,7 +102,12 @@ pub fn lex<S: AsRef<str> + std::fmt::Display>(
         let nl_needed = token == Token::NewLine && !needs_nl;
         needs_nl = matches!(
             token,
-            Token::String(_) | Token::ReplacementStart | Token::ReplacementEnd | Token::Number(_) | Token::FullReplacementStart | Token::FullReplacementEnd
+            Token::String(_)
+                | Token::ReplacementStart
+                | Token::ReplacementEnd
+                | Token::Number(_)
+                | Token::FullReplacementStart
+                | Token::FullReplacementEnd
         );
 
         // End

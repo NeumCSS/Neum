@@ -11,19 +11,6 @@ use std::path::Path;
 
 fn main() {
     let mut total: Vec<(Name, Vec<Token>)> = Vec::new();
-    let file = "src/default/config.neum".to_string();
-    let content = fs::read_to_string(file.clone())
-        .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
-    for i in parse::parse(
-        lexer::lex(Some(&file.clone()), &content.clone()).unwrap(),
-        Some(&file),
-        &content,
-    )
-    .unwrap()
-    {
-        total.push(i.clone());
-    }
-
     let out_dir = env::var("OUT_DIR").unwrap();
     let output = Path::new(&out_dir).join("formated.rs");
     let mut file = BufWriter::new(File::create(&output).unwrap());
@@ -95,26 +82,55 @@ impl Default for Neum {{
     let mut file = BufWriter::new(File::create(&output).unwrap());
     for i in files {
         let name = i.path().display().to_string()[12..].to_string();
+        let content = fs::read_to_string(i.path())
+            .unwrap()
+            .lines()
+            .map(|x| format!("/// {x}"))
+            .collect::<Vec<String>>()
+            .join("\n");
         writeln!(
             &mut file,
             "
-/// Definitions for {}
-/// ```no_run
-{}
-/// ```
-pub struct {} {{}}
+/// Definitions for {0}
+pub struct {1} {{}}
+
+impl {1} {{
+
 ",
             name,
-            fs::read_to_string(i.path())
-                .unwrap()
-                .lines()
-                .map(|x| format!("/// {x}"))
-                .collect::<Vec<String>>()
-                .join("\n"),
             name[..name.len() - 4]
                 .to_string()
                 .replace('/', " ")
                 .to_class_case()
+        )
+        .expect("Cant write to file");
+        for i in &content
+            .split("/// //")
+            .map(|x| {
+                let mut lines = x.trim().split("\n").collect::<Vec<&str>>();
+                let name = lines.get(0).unwrap().clone();
+                lines.remove(0);
+                let text = lines.join("\n").trim_matches('/').trim().to_string();
+                (name.replace(" ", "").to_string(), text.clone())
+            })
+            .collect::<Vec<(String, String)>>()[1..]
+        {
+            writeln!(
+                &mut file,
+                "
+/// ```no_run
+{}
+/// ```
+pub fn {}() {{}}
+",
+                i.1, i.0,
+            )
+            .expect("Cant write to file");
+        }
+        writeln!(
+            &mut file,
+            "
+}}",
         )
         .expect("Cant write to file");
     }
