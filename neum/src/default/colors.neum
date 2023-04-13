@@ -21,6 +21,8 @@ bg-gray => background-color: {{{var-gray}}}
 bg-silver => background-color: {{{var-silver}}}
 bg-white => background-color: {{{var-white}}}
 
+bg-[{}] => background-color: {}
+
 /// Text Color
 
 color-{} => {{{ c-{}  }}}
@@ -42,6 +44,8 @@ c-black => color: {{{var-black}}}
 c-gray => color: {{{var-gray}}}
 c-silver => color: {{{var-silver}}}
 c-white => color: {{{var-white}}}
+
+c-[{}] => color: {}
 
 /// Border Color
 
@@ -65,7 +69,11 @@ b-gray => border-color: {{{var-gray}}}
 b-silver => border-color: {{{var-silver}}}
 b-white => border-color: {{{var-white}}}
 
+b-[{}] => border-color: {}
+
 /// Text Decoration
+
+text-decoration-{} => {{{ decoration-{} }}}
 
 decoration-navy => text-decoration-color: {{{var-navy}}}
 decoration-blue => text-decoration-color: {{{var-blue}}}
@@ -84,6 +92,8 @@ decoration-black => text-decoration-color: {{{var-black}}}
 decoration-gray => text-decoration-color: {{{var-gray}}}
 decoration-silver => text-decoration-color: {{{var-silver}}}
 decoration-white => text-decoration-color: {{{var-white}}}
+
+decoration-[{}] => text-decoration-color: {}
 
 /// Ring Color
 
@@ -105,7 +115,11 @@ ring-gray => --tw-ring-color: {{{var-gray}}}
 ring-silver => --tw-ring-color: {{{var-silver}}}
 ring-white => --tw-ring-color: {{{var-white}}}
 
+ring-[{}] => --tw-ring-color: {}
+
 /// Outline Color
+
+outline-color-{} => {{{ outline-{}  }}}
 
 outline-navy => outline-color: {{{var-navy}}}
 outline-blue => outline-color: {{{var-blue}}}
@@ -125,7 +139,11 @@ outline-gray => outline-color: {{{var-gray}}}
 outline-silver => outline-color: {{{var-silver}}}
 outline-white => outline-color: {{{var-white}}}
 
+outline-{} => outline-color: {}
+
 /// Caret Color
+
+caret-color-{} => {{{ caret-{} }}}
 
 caret-navy => caret-color: {{{var-navy}}}
 caret-blue => caret-color: {{{var-blue}}}
@@ -145,7 +163,11 @@ caret-gray => caret-color: {{{var-gray}}}
 caret-silver => caret-color: {{{var-silver}}}
 caret-white => caret-color: {{{var-white}}}
 
+caret-[{}] => caret-color: {}
+
 /// Accent Color
+
+accent-color-{} => {{{ accent-{} }}}
 
 accent-navy => accent-color: {{{var-navy}}}
 accent-blue => accent-color: {{{var-blue}}}
@@ -165,7 +187,11 @@ accent-gray => accent-color: {{{var-gray}}}
 accent-silver => accent-color: {{{var-silver}}}
 accent-white => accent-color: {{{var-white}}}
 
+accent-[{}] => accent-color: {}
+
 /// Fill Color
+
+fill-color-{} => {{{ fill-{} }}}
 
 fill-navy => fill-color: {{{var-navy}}}
 fill-blue => fill-color: {{{var-blue}}}
@@ -185,7 +211,11 @@ fill-gray => fill-color: {{{var-gray}}}
 fill-silver => fill-color: {{{var-silver}}}
 fill-white => fill-color: {{{var-white}}}
 
+fill-[{}] => fill-color: {}
+
 /// Stroke Color
+
+stroke-color-{} => {{{ stroke-{} }}}
 
 stroke-navy => stroke-color: {{{var-navy}}}
 stroke-blue => stroke-color: {{{var-blue}}}
@@ -204,3 +234,5 @@ stroke-black => stroke-color: {{{var-black}}}
 stroke-gray => stroke-color: {{{var-gray}}}
 stroke-silver => stroke-color: {{{var-silver}}}
 stroke-white => stroke-color: {{{var-white}}}
+
+stroke-[{}] => stroke-color: {}
