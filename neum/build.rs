@@ -111,7 +111,7 @@ impl {1} {{
                 let name = lines.get(0).unwrap().clone();
                 lines.remove(0);
                 let text = lines.join("\n").trim_matches('/').trim().to_string();
-                (name.replace(" ", "").to_string(), text.clone())
+                (name.to_snake_case(), text.clone())
             })
             .collect::<Vec<(String, String)>>()[1..]
         {
