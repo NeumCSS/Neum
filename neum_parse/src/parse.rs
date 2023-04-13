@@ -219,7 +219,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
     parsed: Vec<(Name, Vec<Token>)>,
     input: S,
 ) -> Option<String> {
-    for i in &parsed.clone() {
+    for i in &parsed {
         if let Some(caps) = i.0.regex.captures(input.as_ref()) {
             let mut caps_iter = caps.iter();
             caps_iter.next();
@@ -311,7 +311,6 @@ fn replacement(
             .get("")
             .unwrap_or_else(|| panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)))
         .clone()
-        .to_string()
     } else {
         let mut next_value = false;
         let value = match next {
@@ -321,8 +320,7 @@ fn replacement(
                     w, i.1
                 )
             }))
-            .to_string()
-            .clone(),
+            .to_string(),
             Token::Number(n) => n.to_string(),
             Token::Add => {
                 next_value = true;
@@ -330,7 +328,6 @@ fn replacement(
                     panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
                 }))
                 .to_string()
-                .clone()
             }
             Token::Subtract => {
                 next_value = true;
@@ -338,7 +335,6 @@ fn replacement(
                     panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
                 }))
                 .to_string()
-                .clone()
             }
             Token::Times => {
                 next_value = true;
@@ -346,7 +342,6 @@ fn replacement(
                     panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
                 }))
                 .to_string()
-                .clone()
             }
             Token::Divide => {
                 next_value = true;
@@ -354,7 +349,6 @@ fn replacement(
                     panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
                 }))
                 .to_string()
-                .clone()
             }
             _ => panic!("Internal Error\nDont know what {:?} is in {:?}", next, i.1),
         };

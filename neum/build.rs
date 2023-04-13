@@ -107,11 +107,11 @@ impl {1} {{
         for i in &content
             .split("/// ///")
             .map(|x| {
-                let mut lines = x.trim().split("\n").collect::<Vec<&str>>();
-                let name = lines.get(0).unwrap().clone();
+                let mut lines = x.trim().split('\n').collect::<Vec<&str>>();
+                let name = <&str>::clone(lines.first().unwrap());
                 lines.remove(0);
                 let text = lines.join("\n").trim_matches('/').trim().to_string();
-                (name.to_snake_case(), text.clone())
+                (name.to_snake_case(), text)
             })
             .collect::<Vec<(String, String)>>()[1..]
         {
