@@ -1,5 +1,8 @@
 /// Background Color
 
+background-{} => {{{ bg-{}  }}}
+background-color-{} => {{{ bg-{}  }}}
+
 bg-navy => background-color: {{{var-navy}}}
 bg-blue => background-color: {{{var-blue}}}
 bg-aqua => background-color: {{{var-aqua}}}
@@ -19,6 +22,8 @@ bg-silver => background-color: {{{var-silver}}}
 bg-white => background-color: {{{var-white}}}
 
 /// Text Color
+
+color-{} => {{{ c-{}  }}}
 
 c-navy => color: {{{var-navy}}}
 c-blue => color: {{{var-blue}}}
@@ -40,6 +45,8 @@ c-white => color: {{{var-white}}}
 
 /// Border Color
 
+border-{} => {{{ b-{}  }}}
+
 b-navy => border-color: {{{var-navy}}}
 b-blue => border-color: {{{var-blue}}}
 b-aqua => border-color: {{{var-aqua}}}
@@ -60,63 +67,63 @@ b-white => border-color: {{{var-white}}}
 
 /// Text Decoration
 
-d-navy => text-decoration-color: {{{var-navy}}}
-d-blue => text-decoration-color: {{{var-blue}}}
-d-aqua => text-decoration-color: {{{var-aqua}}}
-d-teal => text-decoration-color: {{{var-teal}}}
-d-purple => text-decoration-color: {{{var-purple}}}
-d-fuchsia => text-decoration-color: {{{var-fuchsia}}}
-d-maroon => text-decoration-color: {{{var-maroon}}}
-d-red => text-decoration-color: {{{var-red}}}
-d-orange => text-decoration-color: {{{var-orange}}}
-d-yellow => text-decoration-color: {{{var-yellow}}}
-d-olive => text-decoration-color: {{{var-olive}}}
-d-green => text-decoration-color: {{{var-green}}}
-d-lime => text-decoration-color: {{{var-lime}}}
-d-black => text-decoration-color: {{{var-black}}}
-d-gray => text-decoration-color: {{{var-gray}}}
-d-silver => text-decoration-color: {{{var-silver}}}
-d-white => text-decoration-color: {{{var-white}}}
+decoration-navy => text-decoration-color: {{{var-navy}}}
+decoration-blue => text-decoration-color: {{{var-blue}}}
+decoration-aqua => text-decoration-color: {{{var-aqua}}}
+decoration-teal => text-decoration-color: {{{var-teal}}}
+decoration-purple => text-decoration-color: {{{var-purple}}}
+decoration-fuchsia => text-decoration-color: {{{var-fuchsia}}}
+decoration-maroon => text-decoration-color: {{{var-maroon}}}
+decoration-red => text-decoration-color: {{{var-red}}}
+decoration-orange => text-decoration-color: {{{var-orange}}}
+decoration-yellow => text-decoration-color: {{{var-yellow}}}
+decoration-olive => text-decoration-color: {{{var-olive}}}
+decoration-green => text-decoration-color: {{{var-green}}}
+decoration-lime => text-decoration-color: {{{var-lime}}}
+decoration-black => text-decoration-color: {{{var-black}}}
+decoration-gray => text-decoration-color: {{{var-gray}}}
+decoration-silver => text-decoration-color: {{{var-silver}}}
+decoration-white => text-decoration-color: {{{var-white}}}
 
 /// Ring Color
 
-r-navy => --tw-ring-color: {{{var-navy}}}
-r-blue => --tw-ring-color: {{{var-blue}}}
-r-aqua => --tw-ring-color: {{{var-aqua}}}
-r-teal => --tw-ring-color: {{{var-teal}}}
-r-purple => --tw-ring-color: {{{var-purple}}}
-r-fuchsia => --tw-ring-color: {{{var-fuchsia}}}
-r-maroon => --tw-ring-color: {{{var-maroon}}}
-r-red => --tw-ring-color: {{{var-red}}}
-r-orange => --tw-ring-color: {{{var-orange}}}
-r-yellow => --tw-ring-color: {{{var-yellow}}}
-r-olive => --tw-ring-color: {{{var-olive}}}
-r-green => --tw-ring-color: {{{var-green}}}
-r-lime => --tw-ring-color: {{{var-lime}}}
-r-black => --tw-ring-color: {{{var-black}}}
-r-gray => --tw-ring-color: {{{var-gray}}}
-r-silver => --tw-ring-color: {{{var-silver}}}
-r-white => --tw-ring-color: {{{var-white}}}
+ring-navy => --tw-ring-color: {{{var-navy}}}
+ring-blue => --tw-ring-color: {{{var-blue}}}
+ring-aqua => --tw-ring-color: {{{var-aqua}}}
+ring-teal => --tw-ring-color: {{{var-teal}}}
+ring-purple => --tw-ring-color: {{{var-purple}}}
+ring-fuchsia => --tw-ring-color: {{{var-fuchsia}}}
+ring-maroon => --tw-ring-color: {{{var-maroon}}}
+ring-red => --tw-ring-color: {{{var-red}}}
+ring-orange => --tw-ring-color: {{{var-orange}}}
+ring-yellow => --tw-ring-color: {{{var-yellow}}}
+ring-olive => --tw-ring-color: {{{var-olive}}}
+ring-green => --tw-ring-color: {{{var-green}}}
+ring-lime => --tw-ring-color: {{{var-lime}}}
+ring-black => --tw-ring-color: {{{var-black}}}
+ring-gray => --tw-ring-color: {{{var-gray}}}
+ring-silver => --tw-ring-color: {{{var-silver}}}
+ring-white => --tw-ring-color: {{{var-white}}}
 
 /// Outline Color
 
-o-navy => outline-color: {{{var-navy}}}
-o-blue => outline-color: {{{var-blue}}}
-o-aqua => outline-color: {{{var-aqua}}}
-o-teal => outline-color: {{{var-teal}}}
-o-purple => outline-color: {{{var-purple}}}
-o-fuchsia => outline-color: {{{var-fuchsia}}}
-o-maroon => outline-color: {{{var-maroon}}}
-o-red => outline-color: {{{var-red}}}
-o-orange => outline-color: {{{var-orange}}}
-o-yellow => outline-color: {{{var-yellow}}}
-o-olive => outline-color: {{{var-olive}}}
-o-green => outline-color: {{{var-green}}}
-o-lime => outline-color: {{{var-lime}}}
-o-black => outline-color: {{{var-black}}}
-o-gray => outline-color: {{{var-gray}}}
-o-silver => outline-color: {{{var-silver}}}
-o-white => outline-color: {{{var-white}}}
+outline-navy => outline-color: {{{var-navy}}}
+outline-blue => outline-color: {{{var-blue}}}
+outline-aqua => outline-color: {{{var-aqua}}}
+outline-teal => outline-color: {{{var-teal}}}
+outline-purple => outline-color: {{{var-purple}}}
+outline-fuchsia => outline-color: {{{var-fuchsia}}}
+outline-maroon => outline-color: {{{var-maroon}}}
+outline-red => outline-color: {{{var-red}}}
+outline-orange => outline-color: {{{var-orange}}}
+outline-yellow => outline-color: {{{var-yellow}}}
+outline-olive => outline-color: {{{var-olive}}}
+outline-green => outline-color: {{{var-green}}}
+outline-lime => outline-color: {{{var-lime}}}
+outline-black => outline-color: {{{var-black}}}
+outline-gray => outline-color: {{{var-gray}}}
+outline-silver => outline-color: {{{var-silver}}}
+outline-white => outline-color: {{{var-white}}}
 
 /// Caret Color
 
@@ -157,3 +164,43 @@ accent-black => accent-color: {{{var-black}}}
 accent-gray => accent-color: {{{var-gray}}}
 accent-silver => accent-color: {{{var-silver}}}
 accent-white => accent-color: {{{var-white}}}
+
+/// Fill Color
+
+fill-navy => fill-color: {{{var-navy}}}
+fill-blue => fill-color: {{{var-blue}}}
+fill-aqua => fill-color: {{{var-aqua}}}
+fill-teal => fill-color: {{{var-teal}}}
+fill-purple => fill-color: {{{var-purple}}}
+fill-fuchsia => fill-color: {{{var-fuchsia}}}
+fill-maroon => fill-color: {{{var-maroon}}}
+fill-red => fill-color: {{{var-red}}}
+fill-orange => fill-color: {{{var-orange}}}
+fill-yellow => fill-color: {{{var-yellow}}}
+fill-olive => fill-color: {{{var-olive}}}
+fill-green => fill-color: {{{var-green}}}
+fill-lime => fill-color: {{{var-lime}}}
+fill-black => fill-color: {{{var-black}}}
+fill-gray => fill-color: {{{var-gray}}}
+fill-silver => fill-color: {{{var-silver}}}
+fill-white => fill-color: {{{var-white}}}
+
+/// Stroke Color
+
+stroke-navy => stroke-color: {{{var-navy}}}
+stroke-blue => stroke-color: {{{var-blue}}}
+stroke-aqua => stroke-color: {{{var-aqua}}}
+stroke-teal => stroke-color: {{{var-teal}}}
+stroke-purple => stroke-color: {{{var-purple}}}
+stroke-fuchsia => stroke-color: {{{var-fuchsia}}}
+stroke-maroon => stroke-color: {{{var-maroon}}}
+stroke-red => stroke-color: {{{var-red}}}
+stroke-orange => stroke-color: {{{var-orange}}}
+stroke-yellow => stroke-color: {{{var-yellow}}}
+stroke-olive => stroke-color: {{{var-olive}}}
+stroke-green => stroke-color: {{{var-green}}}
+stroke-lime => stroke-color: {{{var-lime}}}
+stroke-black => stroke-color: {{{var-black}}}
+stroke-gray => stroke-color: {{{var-gray}}}
+stroke-silver => stroke-color: {{{var-silver}}}
+stroke-white => stroke-color: {{{var-white}}}
