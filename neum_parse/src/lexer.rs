@@ -5,10 +5,12 @@ use crate::error::{ErrorType, NeumError};
 
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub enum Token {
-    #[regex(r"[ \t\f]+", logos::skip)]
     #[regex(r"//.*", logos::skip)]
     #[error]
     Error,
+
+    #[regex(r"[ \t\f]+")]
+    Space,
 
     #[token("/*")]
     StartMultiLineComment,
@@ -58,7 +60,7 @@ pub enum Token {
     #[regex(r"[0-9.]+", |x| x.slice().parse().ok())]
     Number(f64),
 
-    #[regex(r"\.?[^{} \t\f\n+\-*/0-9\.;][^{} \t\f\n;]*", |x| x.slice().to_string())]
+    #[regex(r"[^{} \t\f\n+\-*/0-9\.;][^{} \t\f\n;]*", |x| x.slice().to_string())]
     String(String),
 }
 

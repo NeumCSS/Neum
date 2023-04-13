@@ -104,6 +104,7 @@ pub fn parse<S: AsRef<str>>(
                         Token::Divide => Ok("/".to_string()),
                         Token::Number(x) => Ok(regex::escape(x.to_string().as_str())),
                         Token::String(x) => Ok(regex::escape(x)),
+                        Token::Space => Ok("".to_string()),
                         _ => Err(NeumError::new(
                             ErrorType::UnexpectedToken,
                             file.clone(),
@@ -119,7 +120,7 @@ pub fn parse<S: AsRef<str>>(
 
                 regex.push('$');
 
-                let first = &token
+                let mut first = &token
                     .next()
                     .ok_or_else(|| {
                         NeumError::new(
@@ -130,6 +131,19 @@ pub fn parse<S: AsRef<str>>(
                         )
                     })?
                     .0;
+                if first == &Token::Space {
+                    first = &token
+                        .next()
+                        .ok_or_else(|| {
+                            NeumError::new(
+                                ErrorType::UnexpectedEndOfFile,
+                                file.clone(),
+                                content.as_ref().to_string(),
+                                last.1.end..last.1.end + 1,
+                            )
+                        })?
+                        .0;
+                }
                 let mut convert_to = Vec::new();
                 let go_to = match first {
                     Token::MultiEqualStart => Token::MultiEqualEnd,
@@ -156,6 +170,7 @@ pub fn parse<S: AsRef<str>>(
                                 | Token::NewLine
                                 | Token::FullReplacementStart
                                 | Token::FullReplacementEnd
+                                | Token::Space
                         ) {
                             return Err(NeumError::new(
                                 ErrorType::UnexpectedToken,
@@ -268,6 +283,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                         Token::String(x) => x.clone(),
                         Token::SemiColon => ";".to_string(),
                         Token::NewLine => ";".to_string(),
+                        Token::Space => " ".to_string(),
                         _ => "".to_string(),
                     }
                     .as_str(),
@@ -276,7 +292,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
             if !returns.ends_with(';') {
                 returns.push(';');
             }
-            return Some(returns);
+            return Some(returns.trim().to_string().replace("; ", ";"));
         }
     }
     None
@@ -419,4 +435,6 @@ fn replacement(
             value
         }
     }
+    .trim()
+    .to_string()
 }
