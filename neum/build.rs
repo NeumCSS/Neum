@@ -105,7 +105,7 @@ impl {1} {{
         )
         .expect("Cant write to file");
         for i in &content
-            .split("/// //")
+            .split("/// ///")
             .map(|x| {
                 let mut lines = x.trim().split("\n").collect::<Vec<&str>>();
                 let name = lines.get(0).unwrap().clone();

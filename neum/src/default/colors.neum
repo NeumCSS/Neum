@@ -1,4 +1,4 @@
-// Background Color
+/// Background Color
 
 bg-navy => background-color: {{{var-navy}}}
 bg-blue => background-color: {{{var-blue}}}
@@ -18,7 +18,7 @@ bg-gray => background-color: {{{var-gray}}}
 bg-silver => background-color: {{{var-silver}}}
 bg-white => background-color: {{{var-white}}}
 
-// Text Color
+/// Text Color
 
 c-navy => color: {{{var-navy}}}
 c-blue => color: {{{var-blue}}}
@@ -38,7 +38,7 @@ c-gray => color: {{{var-gray}}}
 c-silver => color: {{{var-silver}}}
 c-white => color: {{{var-white}}}
 
-// Border Color
+/// Border Color
 
 b-navy => border-color: {{{var-navy}}}
 b-blue => border-color: {{{var-blue}}}
@@ -58,7 +58,7 @@ b-gray => border-color: {{{var-gray}}}
 b-silver => border-color: {{{var-silver}}}
 b-white => border-color: {{{var-white}}}
 
-// Text Decoration
+/// Text Decoration
 
 d-navy => text-decoration-color: {{{var-navy}}}
 d-blue => text-decoration-color: {{{var-blue}}}
@@ -78,7 +78,7 @@ d-gray => text-decoration-color: {{{var-gray}}}
 d-silver => text-decoration-color: {{{var-silver}}}
 d-white => text-decoration-color: {{{var-white}}}
 
-// Ring Color
+/// Ring Color
 
 r-navy => --tw-ring-color: {{{var-navy}}}
 r-blue => --tw-ring-color: {{{var-blue}}}
@@ -98,7 +98,7 @@ r-gray => --tw-ring-color: {{{var-gray}}}
 r-silver => --tw-ring-color: {{{var-silver}}}
 r-white => --tw-ring-color: {{{var-white}}}
 
-// Outline Color
+/// Outline Color
 
 o-navy => outline-color: {{{var-navy}}}
 o-blue => outline-color: {{{var-blue}}}
@@ -118,7 +118,7 @@ o-gray => outline-color: {{{var-gray}}}
 o-silver => outline-color: {{{var-silver}}}
 o-white => outline-color: {{{var-white}}}
 
-// Caret Color
+/// Caret Color
 
 caret-navy => caret-color: {{{var-navy}}}
 caret-blue => caret-color: {{{var-blue}}}
@@ -138,7 +138,7 @@ caret-gray => caret-color: {{{var-gray}}}
 caret-silver => caret-color: {{{var-silver}}}
 caret-white => caret-color: {{{var-white}}}
 
-// Accent Color
+/// Accent Color
 
 accent-navy => accent-color: {{{var-navy}}}
 accent-blue => accent-color: {{{var-blue}}}

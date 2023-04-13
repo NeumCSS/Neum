@@ -1,8 +1,14 @@
-// Size
+/// Size
 
-var-sm => 960px
+var-sm => 640px
+var-md => 768px
+var-lg => 1024px
+var-xl => 1280px
+var-xxl => 1536px
 
-// Color
+/// Color
+
+// Colors from https://clrs.cc/
 
 var-navy => #001f3f
 var-blue => #0074D9
