@@ -1,29 +1,29 @@
 /// Width
 
-w-{}% => width:{}%
-w-{x}/{y} => width:{x / y * 100}%
-w-{}px => width:{}px
-w-screen => width:100vw
-w-full => width:100%
-w-screen => width:100vw
-w-min => width:min-content
-w-max => width:max-content
-w-fit => width:fit-content
-w-[{}] => width:{}
-w-{} => width:{*0.25}rem
+w-{}% => width: {}%
+w-{x}/{y} => width: {x / y * 100}%
+w-{}px => width: {}px
+w-screen => width: 100vw
+w-full => width: 100%
+w-screen => width: 100vw
+w-min => width: min-content
+w-max => width: max-content
+w-fit => width: fit-content
+w-[{}] => width: {}
+w-{} => width: {*0.25}rem
 
 /// Max Width
 
-max-w-{}% => max-width:{}%
-max-w-{x}/{y} => max-width:{x / y * 100}%
-max-w-{}px => max-width:{}px
-max-w-[{}] => max-width:{}
-max-w-{} => max-width:{*0.25}rem
+max-w-{}% => max-width: {}%
+max-w-{x}/{y} => max-width: {x / y * 100}%
+max-w-{}px => max-width: {}px
+max-w-[{}] => max-width: {}
+max-w-{} => max-width: {*0.25}rem
 
 /// Min Width
 
-min-w-{}% => min-width:{}%
-min-w-{x}/{y} => min-width:{x / y * 100}%
-min-w-{}px => min-width:{}px
-min-w-[{}] => min-width:{}
-min-w-{} => min-width:{*0.25}rem
+min-w-{}% => min-width: {}%
+min-w-{x}/{y} => min-width: {x / y * 100}%
+min-w-{}px => min-width: {}px
+min-w-[{}] => min-width: {}
+min-w-{} => min-width: {*0.25}rem

@@ -292,7 +292,13 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
             if !returns.ends_with(';') {
                 returns.push(';');
             }
-            return Some(returns.trim().to_string().replace("; ", ";"));
+            return Some(
+                returns
+                    .trim()
+                    .to_string()
+                    .replace("; ", ";")
+                    .replace(": ", ":"),
+            );
         }
     }
     None
@@ -303,9 +309,14 @@ fn replacement(
     variables: HashMap<String, String>,
     i: &(Name, Vec<Token>),
 ) -> String {
-    let next = returns_iter
+    let mut next = returns_iter
         .next()
         .expect("Should never happen but failed to get value");
+    if next == &Token::Space {
+        next = returns_iter
+            .next()
+            .expect("Should never happen but failed to get value");
+    }
     if next == &Token::ReplacementEnd {
         (*variables
             .get("")
@@ -390,14 +401,24 @@ fn replacement(
                     _ => panic!("Internal Error\nUsed a token not able to use in replacement"),
                 }
             }
-            while let Some(y) = returns_iter.next() {
+            while let Some(mut y) = returns_iter.next() {
+                if y == &Token::Space {
+                    y = returns_iter
+                        .next()
+                        .expect("Inetrnal Error\nCould not find end of Replacement");
+                }
                 if y == &Token::ReplacementEnd {
                     break;
                 }
-                let next = match returns_iter
+                let mut next_value = returns_iter
                     .next()
-                    .expect("Internal Error\nCould nothing after a \"+\" \"-\" \"*\" \"/\"")
-                {
+                    .expect("Internal Error\nCould nothing after a \"+\" \"-\" \"*\" \"/\"");
+                if next_value == &Token::Space {
+                    next_value = returns_iter
+                        .next()
+                        .expect("Inetrnal Error\nCould not find end of Replacement");
+                }
+                let next = match next_value {
                     Token::String(w) => variables
                         .get(w)
                         .unwrap_or_else(|| {
@@ -414,7 +435,9 @@ fn replacement(
                             )
                         }),
                     Token::Number(w) => *w,
-                    _ => panic!("Internal Error\nCould not find out what char is requested for"),
+                    _ => panic!(
+                        "Internal Error\nCould not find out what char is requested for {y:?}"
+                    ),
                 };
                 match y {
                     Token::Add => int_value += next,
