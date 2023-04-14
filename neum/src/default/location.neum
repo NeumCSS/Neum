@@ -1,0 +1,58 @@
+/// Position Absolute
+
+pos-a => {{{pos-absolute}}}
+pos-absolute => position: absolute
+
+/// Position Static
+
+pos-stic => {{{pos-static}}}
+pos-static => position: static
+
+/// Position Relitive
+
+pos-r => {{{pos-relitive}}}
+pos-relitive => position: relitive
+
+/// Position Fixed
+
+pos-f => {{{pos-fixed}}}
+pos-fixed => position: fixed
+
+/// Position Sticky
+
+pos-sty => {{{pos-sticky}}}
+pos-sticky => position: sticky
+
+/// Top
+
+t-{} => {{{ top-{}  }}}
+top-{}% => top: {}%
+top-{}px  => top: {}px
+top-[{}] => top: {}
+
+/// Bottom
+
+b-{} => {{{ bottom-{}  }}}
+bottom-{}% => bottom: {}%
+bottom-{}px  => bottom: {}px
+bottom-[{}] => bottom: {}
+
+/// Left
+
+l-{} => {{{ left-{}  }}}
+left-{}% => left: {}%
+left-{}px  => left: {}px
+left-[{}] => left: {}
+
+/// Right
+
+r-{} => {{{ right-{}  }}}
+right-{}% => right: {}%
+right-{}px  => right: {}px
+right-[{}] => right: {}
+
+/// Transform
+
+transform-y-{} => -ms-transform: translateY({});transform: translateY({})
+transform-x-{} => -ms-transform: translateX({});transform: translateX({})
+transform-xy-{} => -ms-transform: translateX({}) translateY({});transform: translateX({}) translateY({})

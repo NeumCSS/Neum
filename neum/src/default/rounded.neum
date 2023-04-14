@@ -1,0 +1,124 @@
+/// Total Round
+
+rounded{} => {{{ r{} }}}
+
+r-{}px => border-radius: {}px
+r-{}% => border-radius: {}%
+r-{}rem => border-radius: {}rem
+
+r-none => border-radius: {{{ var-rounded-none }}}
+r => border-radius: {{{ var-rounded }}}
+r-md => border-radius: {{{ var-rounded-md }}}
+r-lg => border-radius: {{{ var-rounded-lg }}}
+r-xl => border-radius: {{{ var-rounded-xl }}}
+r-2xl => border-radius: {{{ var-rounded-2xl }}}
+r-3xl => border-radius: {{{ var-rounded-3xl }}}
+r-full => border-radius: {{{ var-rounded-full }}}
+
+r-[{}] => border-radius: {}
+
+/// Start Round
+
+rounded-start{} => {{{ rs{} }}}
+
+rs-{}px => border-start-start-radius: {}px;border-end-start-radius: {}px
+rs-{}rem => border-start-start-radius: {}rem;border-end-start-radius: {}rem
+
+rs-none => border-start-start-radius: {{{ var-rounded-none }}};border-end-start-radius: {{{ var-rounded-none }}}
+rs => border-start-start-radius: {{{ var-rounded }}};border-end-start-radius: {{{ var-rounded }}}
+rs-md => border-start-start-radius: {{{ var-rounded-md }}};border-end-start-radius: {{{ var-rounded-md }}}
+rs-lg => border-start-start-radius: {{{ var-rounded-lg }}};border-end-start-radius: {{{ var-rounded-lg }}}
+rs-xl => border-start-start-radius: {{{ var-rounded-xl }}};border-end-start-radius: {{{ var-rounded-xl }}}
+rs-2xl => border-start-start-radius: {{{ var-rounded-2xl }}};border-end-start-radius: {{{ var-rounded-2xl }}}
+rs-3xl => border-start-start-radius: {{{ var-rounded-3xl }}};border-end-start-radius: {{{ var-rounded-3xl }}}
+rs-full => border-start-start-radius: {{{ var-rounded-full }}};border-end-start-radius: {{{ var-rounded-full }}}
+
+rs-[{}] => border-start-start-radius: {};border-end-start-radius: {}
+
+/// End Round
+
+rounded-end{} => {{{ re{} }}}
+
+re-{}px => border-start-end-radius: {}px;border-end-end-radius: {}px
+re-{}rem => border-start-end-radius: {}rem;border-end-end-radius: {}rem
+
+re-none => border-start-end-radius: {{{ var-rounded-none }}};border-end-end-radius: {{{ var-rounded-none }}}
+re => border-start-end-radius: {{{ var-rounded }}};border-end-end-radius: {{{ var-rounded }}}
+re-md => border-start-end-radius: {{{ var-rounded-md }}};border-end-end-radius: {{{ var-rounded-md }}}
+re-lg => border-start-end-radius: {{{ var-rounded-lg }}};border-end-end-radius: {{{ var-rounded-lg }}}
+re-xl => border-start-end-radius: {{{ var-rounded-xl }}};border-end-end-radius: {{{ var-rounded-xl }}}
+re-2xl => border-start-end-radius: {{{ var-rounded-2xl }}};border-end-end-radius: {{{ var-rounded-2xl }}}
+re-3xl => border-start-end-radius: {{{ var-rounded-3xl }}};border-end-end-radius: {{{ var-rounded-3xl }}}
+re-full => border-start-end-radius: {{{ var-rounded-full }}};border-end-end-radius: {{{ var-rounded-full }}}
+
+re-[{}] => border-start-end-radius: {};border-end-end-radius: {}
+
+/// Left Round
+
+rounded-left{} => {{{ rl{} }}}
+
+rl-{}px => border-top-left-radius: {}px;border-bottom-left-radius: {}px
+rl-{}rem => border-top-left-radius: {}rem;border-bottom-left-radius: {}rem
+
+rl-none => border-top-left-radius: {{{ var-rounded-none }}};border-bottom-left-radius: {{{ var-rounded-none }}}
+rl => border-top-left-radius: {{{ var-rounded }}};border-bottom-left-radius: {{{ var-rounded }}}
+rl-md => border-top-left-radius: {{{ var-rounded-md }}};border-bottom-left-radius: {{{ var-rounded-md }}}
+rl-lg => border-top-left-radius: {{{ var-rounded-lg }}};border-bottom-left-radius: {{{ var-rounded-lg }}}
+rl-xl => border-top-left-radius: {{{ var-rounded-xl }}};border-bottom-left-radius: {{{ var-rounded-xl }}}
+rl-2xl => border-top-left-radius: {{{ var-rounded-2xl }}};border-bottom-left-radius: {{{ var-rounded-2xl }}}
+rl-3xl => border-top-left-radius: {{{ var-rounded-3xl }}};border-bottom-left-radius: {{{ var-rounded-3xl }}}
+rl-full => border-top-left-radius: {{{ var-rounded-full }}};border-bottom-left-radius: {{{ var-rounded-full }}}
+
+rl-[{}] => border-top-left-radius: {};border-bottom-left-radius: {}
+
+/// Bottom Round
+
+rounded-bottom{} => {{{ rb{} }}}
+
+rb-{}px => border-bottom-left-radius: {}px;border-bottom-right-radius: {}px
+rb-{}rem => border-bottom-left-radius: {}rem;border-bottom-right-radius: {}rem
+
+rb-none => border-bottom-left-radius: {{{ var-rounded-none }}};border-bottom-right-radius: {{{ var-rounded-none }}}
+rb => border-bottom-left-radius: {{{ var-rounded }}};border-bottom-right-radius: {{{ var-rounded }}}
+rb-md => border-bottom-left-radius: {{{ var-rounded-md }}};border-bottom-right-radius: {{{ var-rounded-md }}}
+rb-lg => border-bottom-left-radius: {{{ var-rounded-lg }}};border-bottom-right-radius: {{{ var-rounded-lg }}}
+rb-xl => border-bottom-left-radius: {{{ var-rounded-xl }}};border-bottom-right-radius: {{{ var-rounded-xl }}}
+rb-2xl => border-bottom-left-radius: {{{ var-rounded-2xl }}};border-bottom-right-radius: {{{ var-rounded-2xl }}}
+rb-3xl => border-bottom-left-radius: {{{ var-rounded-3xl }}};border-bottom-right-radius: {{{ var-rounded-3xl }}}
+rb-full => border-bottom-left-radius: {{{ var-rounded-full }}};border-bottom-right-radius: {{{ var-rounded-full }}}
+
+/// Right Round
+
+rounded-right{} => {{{ rr{} }}}
+
+rr-{}px => border-top-right-radius: {}px;border-bottom-right-radius: {}px
+rr-{}rem => border-top-right-radius: {}rem;border-bottom-right-radius: {}rem
+
+rr-none => border-top-right-radius: {{{ var-rounded-none }}};border-bottom-right-radius: {{{ var-rounded-none }}}
+rr => border-top-right-radius: {{{ var-rounded }}};border-bottom-right-radius: {{{ var-rounded }}}
+rr-md => border-top-right-radius: {{{ var-rounded-md }}};border-bottom-right-radius: {{{ var-rounded-md }}}
+rr-lg => border-top-right-radius: {{{ var-rounded-lg }}};border-bottom-right-radius: {{{ var-rounded-lg }}}
+rr-xl => border-top-right-radius: {{{ var-rounded-xl }}};border-bottom-right-radius: {{{ var-rounded-xl }}}
+rr-2xl => border-top-right-radius: {{{ var-rounded-2xl }}};border-bottom-right-radius: {{{ var-rounded-2xl }}}
+rr-3xl => border-top-right-radius: {{{ var-rounded-3xl }}};border-bottom-right-radius: {{{ var-rounded-3xl }}}
+rr-full => border-top-right-radius: {{{ var-rounded-full }}};border-bottom-right-radius: {{{ var-rounded-full }}}
+
+rr-[{}] => border-top-right-radius: {};border-bottom-right-radius: {}
+
+/// Top Round
+
+rounded-top{} => {{{ rt{} }}}
+
+rt-{}px => border-top-left-radius: {}px;border-top-right-radius: {}px
+rt-{}rem => border-top-left-radius: {}rem;border-top-right-radius: {}rem
+
+rt-none => border-top-left-radius: {{{ var-rounded-none }}};border-top-right-radius: {{{ var-rounded-none }}}
+rt => border-top-left-radius: {{{ var-rounded }}};border-top-right-radius: {{{ var-rounded }}}
+rt-md => border-top-left-radius: {{{ var-rounded-md }}};border-top-right-radius: {{{ var-rounded-md }}}
+rt-lg => border-top-left-radius: {{{ var-rounded-lg }}};border-top-right-radius: {{{ var-rounded-lg }}}
+rt-xl => border-top-left-radius: {{{ var-rounded-xl }}};border-top-right-radius: {{{ var-rounded-xl }}}
+rt-2xl => border-top-left-radius: {{{ var-rounded-2xl }}};border-top-right-radius: {{{ var-rounded-2xl }}}
+rt-3xl => border-top-left-radius: {{{ var-rounded-3xl }}};border-top-right-radius: {{{ var-rounded-3xl }}}
+rt-full => border-top-left-radius: {{{ var-rounded-full }}};border-top-right-radius: {{{ var-rounded-full }}}
+
+rt-[{}] => border-top-left-radius: {};border-top-right-radius: {}

@@ -49,27 +49,27 @@ c-[{}] => color: {}
 
 /// Border Color
 
-border-{} => {{{ b-{}  }}}
+border-color-{} => {{{ bc-{}  }}}
 
-b-navy => border-color: {{{var-navy}}}
-b-blue => border-color: {{{var-blue}}}
-b-aqua => border-color: {{{var-aqua}}}
-b-teal => border-color: {{{var-teal}}}
-b-purple => border-color: {{{var-purple}}}
-b-fuchsia => border-color: {{{var-fuchsia}}}
-b-maroon => border-color: {{{var-maroon}}}
-b-red => border-color: {{{var-red}}}
-b-orange => border-color: {{{var-orange}}}
-b-yellow => border-color: {{{var-yellow}}}
-b-olive => border-color: {{{var-olive}}}
-b-green => border-color: {{{var-green}}}
-b-lime => border-color: {{{var-lime}}}
-b-black => border-color: {{{var-black}}}
-b-gray => border-color: {{{var-gray}}}
-b-silver => border-color: {{{var-silver}}}
-b-white => border-color: {{{var-white}}}
+bc-navy => border-color: {{{var-navy}}}
+bc-blue => border-color: {{{var-blue}}}
+bc-aqua => border-color: {{{var-aqua}}}
+bc-teal => border-color: {{{var-teal}}}
+bc-purple => border-color: {{{var-purple}}}
+bc-fuchsia => border-color: {{{var-fuchsia}}}
+bc-maroon => border-color: {{{var-maroon}}}
+bc-red => border-color: {{{var-red}}}
+bc-orange => border-color: {{{var-orange}}}
+bc-yellow => border-color: {{{var-yellow}}}
+bc-olive => border-color: {{{var-olive}}}
+bc-green => border-color: {{{var-green}}}
+bc-lime => border-color: {{{var-lime}}}
+bc-black => border-color: {{{var-black}}}
+bc-gray => border-color: {{{var-gray}}}
+bc-silver => border-color: {{{var-silver}}}
+bc-white => border-color: {{{var-white}}}
 
-b-[{}] => border-color: {}
+bc-[{}] => border-color: {}
 
 /// Text Decoration
 

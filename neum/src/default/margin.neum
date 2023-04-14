@@ -1,0 +1,49 @@
+/// Margin
+
+m-{}px => margin: {}px
+m-auto => margin: auto
+m-{} => margin: {*.25}rem
+
+/// Margin X
+
+mx-{} => {{{ ml-{} }}}{{{ mr-{} }}}
+
+/// Margin Y
+
+my-{} => {{{ mt-{} }}}{{{ mb-{} }}}
+
+/// Margin Top
+
+mt-{}px => margin-top: {}px
+mt-auto => margin-top: auto
+mt-{} => margin-top: {*.25}rem
+
+/// Margin Left
+
+ml-{}px => margin-left: {}px
+ml-auto => margin-left: auto
+ml-{} => margin-left: {*.25}rem
+
+/// Margin Bottom
+
+mb-{}px => margin-bottom: {}px
+mb-auto => margin-bottom: auto
+mb-{} => margin-bottom: {*.25}rem
+
+/// Margin Right
+
+mr-{}px => margin-right: {}px
+mr-auto => margin-right: auto
+mr-{} => margin-right: {*.25}rem
+
+/// Margin Inline Start
+
+ms-{}px => margin-inline-start: {}px
+ms-auto => margin-inline-start: auto
+ms-{} => margin-inline-start: {*.25}rem
+
+/// Margin Inline End
+
+me-{}px => margin-inline-end: {}px
+me-auto => margin-inline-end: auto
+me-{} => margin-inline-end: {*.25}rem

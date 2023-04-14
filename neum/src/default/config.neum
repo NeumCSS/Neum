@@ -27,3 +27,16 @@ var-black => #111111
 var-gray => #AAAAAA
 var-silver => #DDDDDD
 var-white => #FFFFFF
+
+/// Rounded
+
+var-rounded-none => 0px
+var-rounded-sm => 0.125rem
+var-rounded => 0.25rem
+var-rounded-md => 0.375rem
+var-rounded-lg => 0.5rem
+var-rounded-xl => 0.75rem
+var-rounded-2xl => 1rem
+var-rounded-3xl => 1.5rem
+var-rounded-full => 9999px
+var-rounded-{} => {}

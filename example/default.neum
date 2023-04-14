@@ -1,4 +1,1 @@
-section => {{
-    {{{w-5}}}
-    {{{min-w-0}}}
-}}
+var-teal => #41BADF

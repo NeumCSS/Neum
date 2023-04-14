@@ -9,10 +9,14 @@ w-screen => width: 100vw
 w-min => width: min-content
 w-max => width: max-content
 w-fit => width: fit-content
+w-auto => width: auto
+w-fill => width: -webkit-fill-available
 w-[{}] => width: {}
 w-{} => width: {*0.25}rem
 
 /// Max Width
+
+maw-{} => {{{ max-w-{} }}}
 
 max-w-{}% => max-width: {}%
 max-w-{x}/{y} => max-width: {x / y * 100}%
@@ -21,6 +25,8 @@ max-w-[{}] => max-width: {}
 max-w-{} => max-width: {*0.25}rem
 
 /// Min Width
+
+miw-{} => {{{ min-w-{} }}}
 
 min-w-{}% => min-width: {}%
 min-w-{x}/{y} => min-width: {x / y * 100}%
