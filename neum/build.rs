@@ -78,7 +78,6 @@ impl Default for Neum {{
 "
     )
     .expect("Cant write to file");
-    /*
     let output = Path::new(&out_dir).join("definitions.rs");
     let mut file = BufWriter::new(File::create(&output).unwrap());
     for i in files {
@@ -135,5 +134,4 @@ pub fn {}() {{}}
         )
         .expect("Cant write to file");
     }
-     */
 }
