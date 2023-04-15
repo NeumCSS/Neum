@@ -57,10 +57,10 @@ pub enum Token {
     #[token(";")]
     SemiColon,
 
-    #[regex(r"[0-9.]+", |x| x.slice().parse().ok())]
+    #[regex(r"[0-9]+\.?[0-9]*", |x| x.slice().parse().ok())]
     Number(f64),
 
-    #[regex(r"[^{} \t\f\n+\-*/0-9\.;][^{} \t\f\n;]*", |x| x.slice().to_string())]
+    #[regex(r"[^{} \t\f\n+\-*/0-9;][^{} \t\f\n;]*", |x| x.slice().to_string())]
     String(String),
 }
 

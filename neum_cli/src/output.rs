@@ -36,7 +36,20 @@ pub fn update() {
     total_neum = total_neum.combine_priority(libraries).combine_priority(other);
 
     for i in total_classes {
-        if let Some(x) = total_neum.convert(i.clone()) {
+        if let Some(mut x) = total_neum.convert(i.clone()) {
+            while x.starts_with('.') || x.starts_with('@') {
+                let period = x.starts_with('.');
+                let mut split = x.split('}').collect::<Vec<_>>();
+                let mut new_css = format!("{}}}", split.remove(0));
+                if period {
+                    let mut vec = new_css.split(':').collect::<Vec<_>>();
+                    let first = &format!(".{i}");
+                    vec[0] = first;
+                    new_css = vec.join(":");
+                }
+                output.push_str(&new_css);
+                x = split.join("}");
+            }
             output.push_str(&format!(".{i}{{{x}}}"));
         }
     }

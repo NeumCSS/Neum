@@ -145,8 +145,12 @@ pub fn parse<S: AsRef<str>>(
                         .0;
                 }
                 let mut convert_to = Vec::new();
+                let mut multiequal_count = 0;
                 let go_to = match first {
-                    Token::MultiEqualStart => Token::MultiEqualEnd,
+                    Token::MultiEqualStart => {
+                        multiequal_count += 1;
+                        Token::MultiEqualEnd
+                    },
                     _ => {
                         convert_to.push(first.clone());
                         Token::NewLine
@@ -155,7 +159,13 @@ pub fn parse<S: AsRef<str>>(
                 let mut broke = false;
                 for i in token.by_ref() {
                     last = i;
-                    if i.0 != go_to {
+                    if i.0 == Token::MultiEqualStart {
+                        multiequal_count += 1;
+                    }
+                    else if i.0 == Token::MultiEqualEnd {
+                        multiequal_count -= 1;
+                    }
+                    if !(i.0 == go_to && !(go_to == Token::MultiEqualEnd && i.0 == Token::MultiEqualEnd && multiequal_count != 0)) {
                         if !matches!(
                             i.0,
                             Token::ReplacementStart
@@ -171,6 +181,8 @@ pub fn parse<S: AsRef<str>>(
                                 | Token::FullReplacementStart
                                 | Token::FullReplacementEnd
                                 | Token::Space
+                                | Token::MultiEqualStart
+                                | Token::MultiEqualEnd
                         ) {
                             return Err(NeumError::new(
                                 ErrorType::UnexpectedToken,
@@ -242,8 +254,8 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
             let mut returns = String::new();
             let mut returns_iter = i.1.iter();
             while let Some(x) = returns_iter.next() {
-                returns.push_str(
-                    match x {
+                let mut is_replacement = false;
+                let adds = match x {
                         Token::FullReplacementStart => {
                             let mut search = String::new();
                             while let Some(x) = returns_iter.next() {
@@ -270,6 +282,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                             let returns = converts(parsed.clone(), search)?;
                             let mut chars = returns.chars();
                             chars.next_back();
+                            is_replacement = true;
                             chars.as_str().to_string()
                         }
                         Token::ReplacementStart => {
@@ -284,10 +297,16 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                         Token::SemiColon => ";".to_string(),
                         Token::NewLine => ";".to_string(),
                         Token::Space => " ".to_string(),
+                        Token::MultiEqualStart => "{".to_string(),
+                        Token::MultiEqualEnd => "}".to_string(),
                         _ => "".to_string(),
-                    }
-                    .as_str(),
-                )
+                    };
+                if is_replacement && (adds.starts_with('.') || adds.starts_with('@')) {
+                    returns = format!("{adds}{returns}");
+                }
+                else {
+                    returns.push_str(adds.as_str());
+                }
             }
             if !returns.ends_with(';') {
                 returns.push(';');
@@ -297,7 +316,9 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                     .trim()
                     .to_string()
                     .replace("; ", ";")
-                    .replace(": ", ":"),
+                    .replace(": ", ":")
+                    .replace(" {", "{")
+                    .replace("{ ", "{"),
             );
         }
     }
