@@ -1,0 +1,14 @@
+/// Line Height
+
+line-height-{} => {{{ lh-{} }}}
+
+lh-{}px => line-height: {}px
+lh-{}rem => line-height: {}rem
+lh-{} => line-height: {}
+
+/// Font Size
+
+font-size-{} => {{{ fs-{} }}}
+
+fs-{}px => font-size: {}px
+fs-{} => font-size: {*0.25}rem
