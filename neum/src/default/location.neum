@@ -25,28 +25,28 @@ pos-sticky => position: sticky
 
 /// Top
 
-t-{} => {{{ top-{}  }}}
+pt-{} => {{{ top-{}  }}}
 top-{}% => top: {}%
 top-{}px  => top: {}px
 top-[{}] => top: {}
 
 /// Bottom
 
-b-{} => {{{ bottom-{}  }}}
+pb-{} => {{{ bottom-{}  }}}
 bottom-{}% => bottom: {}%
 bottom-{}px  => bottom: {}px
 bottom-[{}] => bottom: {}
 
 /// Left
 
-l-{} => {{{ left-{}  }}}
+pl-{} => {{{ left-{}  }}}
 left-{}% => left: {}%
 left-{}px  => left: {}px
 left-[{}] => left: {}
 
 /// Right
 
-r-{} => {{{ right-{}  }}}
+pr-{} => {{{ right-{}  }}}
 right-{}% => right: {}%
 right-{}px  => right: {}px
 right-[{}] => right: {}

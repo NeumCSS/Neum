@@ -1,8 +1,8 @@
 use crate::{html_parse, neum_parse, ARGS};
 use itertools::Itertools;
+use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
-use std::ffi::OsStr;
 use std::path::Component;
 
 pub fn update() {
@@ -25,15 +25,22 @@ pub fn update() {
     let mut other = neum::Neum::new("", None).unwrap();
 
     for (path, neum) in neum_files.iter() {
-        if !path.as_path().components().filter(|x| *x == Component::Normal(OsStr::new(".neum"))).collect::<Vec<_>>().is_empty() {
+        if !path
+            .as_path()
+            .components()
+            .filter(|x| *x == Component::Normal(OsStr::new(".neum")))
+            .collect::<Vec<_>>()
+            .is_empty()
+        {
             libraries = libraries.combine_priority(neum.clone());
-        }
-        else {
+        } else {
             other = other.combine_priority(neum.clone());
         }
     }
 
-    total_neum = total_neum.combine_priority(libraries).combine_priority(other);
+    total_neum = total_neum
+        .combine_priority(libraries)
+        .combine_priority(other);
 
     for i in total_classes {
         if let Some(mut x) = total_neum.convert(i.clone()) {
@@ -41,7 +48,7 @@ pub fn update() {
                 let period = x.starts_with('.');
                 let mut split = x.split('}').collect::<Vec<_>>();
                 let mut new_css = format!("{}}}", split.remove(0));
-                if period {
+                if period && new_css.split('{').next().unwrap().contains(':') {
                     let mut vec = new_css.split(':').collect::<Vec<_>>();
                     let first = &format!(".{i}");
                     vec[0] = first;
@@ -50,7 +57,9 @@ pub fn update() {
                 output.push_str(&new_css);
                 x = split.join("}");
             }
-            output.push_str(&format!(".{i}{{{x}}}"));
+            if x != ";" {
+                output.push_str(&format!(".{i}{{{x}}}"));
+            }
         }
     }
     let mut file = File::create(ARGS.output.clone()).unwrap();

@@ -254,37 +254,9 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
             let mut returns = String::new();
             let mut returns_iter = i.1.iter();
             while let Some(x) = returns_iter.next() {
-                let mut is_replacement = false;
+                let is_replacement = x == &Token::FullReplacementStart;
                 let adds = match x {
-                        Token::FullReplacementStart => {
-                            let mut search = String::new();
-                            while let Some(x) = returns_iter.next() {
-                                if x == &Token::FullReplacementEnd {
-                                    break;
-                                }
-                                search.push_str(&match x {
-                                    Token::ReplacementStart => replacement(
-                                        &mut returns_iter,
-                                        variables.clone(),
-                                        &i.clone(),
-                                    ),
-                                    Token::Add => "+".to_string(),
-                                    Token::Subtract => r"\-".to_string(),
-                                    Token::Times => r"\*".to_string(),
-                                    Token::Divide => "/".to_string(),
-                                    Token::Number(x) => x.to_string(),
-                                    Token::String(x) => x.clone(),
-                                    Token::SemiColon => ";".to_string(),
-                                    Token::NewLine => ";".to_string(),
-                                    _ => "".to_string(),
-                                });
-                            }
-                            let returns = converts(parsed.clone(), search)?;
-                            let mut chars = returns.chars();
-                            chars.next_back();
-                            is_replacement = true;
-                            chars.as_str().to_string()
-                        }
+                        Token::FullReplacementStart => full_replacement(parsed.clone(), &mut returns_iter, variables.clone(), i)?,
                         Token::ReplacementStart => {
                             replacement(&mut returns_iter, variables.clone(), i)
                         }
@@ -323,6 +295,50 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
         }
     }
     None
+}
+
+fn full_replacement(
+    parsed: Vec<(Name, Vec<Token>)>,
+    returns_iter: &mut Iter<Token>,
+    variables: HashMap<String, String>,
+    i: &(Name, Vec<Token>),
+) -> Option<String> {
+    let mut search = String::new();
+    let mut y = 1;
+    while let Some(x) = returns_iter.next() {
+        if x == &Token::FullReplacementStart {
+            y+=1;
+        }
+        if x == &Token::FullReplacementEnd {
+            if y == 1 {
+                break;
+            }
+            else {
+                y-=1;
+            }
+        }
+        search.push_str(&match x {
+            Token::ReplacementStart => replacement(
+                returns_iter,
+                variables.clone(),
+                &i.clone(),
+            ),
+            Token::Add => "+".to_string(),
+            Token::Subtract => r"\-".to_string(),
+            Token::Times => r"\*".to_string(),
+            Token::Divide => "/".to_string(),
+            Token::Number(x) => x.to_string(),
+            Token::String(x) => x.clone(),
+            Token::SemiColon => ";".to_string(),
+            Token::NewLine => ";".to_string(),
+            Token::FullReplacementStart => full_replacement(parsed.clone(), returns_iter, variables.clone(), i)?,
+            _ => "".to_string(),
+        });
+    }
+    let returns = converts(parsed.clone(), search)?;
+    let mut chars = returns.chars();
+    chars.next_back();
+    Some(chars.as_str().to_string())
 }
 
 fn replacement(

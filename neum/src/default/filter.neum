@@ -1,0 +1,7 @@
+// Brightness
+
+brightness-{}% => filter: brightness({}%)
+
+/// Custom
+
+filter-[{}] => filter: {}
