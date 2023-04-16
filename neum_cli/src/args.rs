@@ -20,6 +20,10 @@ pub struct Args {
     /// Your output css file
     #[clap(short, long, value_parser)]
     pub output: PathBuf,
+
+    /// Show extra information
+    #[clap(short, long, value_parser, default_value_t = false)]
+    pub verbose: bool,
 }
 
 lazy_static! {
