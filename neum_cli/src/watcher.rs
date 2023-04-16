@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
 use walkdir::WalkDir;
+use crate::output::update;
 
 use crate::html_parse;
 use crate::neum_parse;
@@ -27,6 +28,7 @@ pub fn watch() {
                         if let Err(e) = neum_parse::update_neum(e.path.clone()) {
                             eprintln!("{e}");
                         }
+                        update();
                     }
                 }
             }
@@ -55,10 +57,12 @@ pub fn watch() {
                         if html_parse::update_html(e.path.clone()).is_err() {
                             eprintln!("Failded to parse {}", e.path.display());
                         }
+                        update();
                     } else if extension == "neum" && ARGS.neum_folder.is_none() {
                         if let Err(e) = neum_parse::update_neum(e.path.clone()) {
                             eprintln!("{e}");
                         }
+                        update();
                     }
                 }
             }
@@ -104,6 +108,7 @@ pub fn init() {
             }
         }
     }
+    update();
 }
 
 fn excludes(path: PathBuf) -> bool {

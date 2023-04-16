@@ -1,4 +1,3 @@
-use crate::output::update;
 use html_parser::{Dom, Node};
 use itertools::Itertools;
 use lazy_static::lazy_static;
@@ -41,7 +40,6 @@ pub fn update_html(path: PathBuf) -> anyhow::Result<()> {
         let mut html_files = html_files.lock().unwrap();
         html_files.remove(&path);
     }
-    update();
     Ok(())
 }
 

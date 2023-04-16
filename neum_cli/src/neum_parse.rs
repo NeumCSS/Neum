@@ -1,4 +1,3 @@
-use crate::output::update;
 use lazy_static::lazy_static;
 use neum::Neum;
 use std::collections::HashMap;
@@ -27,6 +26,5 @@ pub fn update_neum(path: PathBuf) -> Result<(), neum::error::NeumError> {
         let mut neum_files = neum_files.lock().unwrap();
         neum_files.remove(&path);
     }
-    update();
     Ok(())
 }
