@@ -159,7 +159,7 @@ impl Neum {
         neum_clone.append(&mut self_clone);
         let mut neum_clone_consts = neum.consts;
         let self_clone_consts = self.consts;
-        neum_clone_consts.extend(self_clone_consts.clone());
+        neum_clone_consts.extend(self_clone_consts);
         Neum{converts:neum_clone, consts: neum_clone_consts, cache: self.cache}
     }
 
