@@ -8,6 +8,7 @@ use std::sync::Mutex;
 use std::time::Instant;
 
 lazy_static::lazy_static! {
+    static ref REAL_DEFAULTS: neum::Neum = neum::Neum::default();
     static ref DEFAULTS: Mutex<neum::Neum> = Mutex::new(neum::Neum::default());
 }
 
@@ -29,27 +30,26 @@ pub fn update(refresh: bool) {
 
     let mut total_neum = DEFAULTS.lock().unwrap();
     if refresh {
-        total_neum.refresh();
-    }
-    let mut libraries = neum::Neum::empty();
-    let mut other = neum::Neum::empty();
+        let mut libraries = neum::Neum::empty();
+        let mut other = neum::Neum::empty();
 
-    for (path, neum) in neum_files.iter() {
-        if path
-            .as_path()
-            .components()
-            .any(|x| x == Component::Normal(OsStr::new(".neum")))
-        {
-            libraries = libraries.combine_priority(neum.clone());
-        } else {
-            other = other.combine_priority(neum.clone());
+        for (path, neum) in neum_files.iter() {
+            if path
+                .as_path()
+                .components()
+                .any(|x| x == Component::Normal(OsStr::new(".neum")))
+            {
+                libraries = libraries.combine_priority(neum.clone());
+            } else {
+                other = other.combine_priority(neum.clone());
+            }
         }
-    }
 
-    *total_neum = total_neum
-        .clone()
-        .combine_priority(libraries)
-        .combine_priority(other);
+        *total_neum = REAL_DEFAULTS
+            .clone()
+            .combine_priority(libraries)
+            .combine_priority(other);
+    }
 
     for i in total_classes {
         if let Some(mut x) = total_neum.convert(i.clone()) {

@@ -123,7 +123,7 @@ pub fn init() {
             }
         }
     }
-    update(false);
+    update(true);
 }
 
 fn excludes(path: PathBuf) -> bool {
