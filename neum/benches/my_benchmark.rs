@@ -61,5 +61,13 @@ fn convert(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, parsing_files, convert);
+fn init(c: &mut Criterion) {
+    c.bench_function("initilize default", |b| {
+        b.iter(|| {
+            let _ = Neum::default();
+        })
+    });
+}
+
+criterion_group!(benches, parsing_files, convert, init);
 criterion_main!(benches);
