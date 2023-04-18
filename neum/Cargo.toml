@@ -19,3 +19,11 @@ regex = "1.7.3"
 neum-parse = {path = "../neum_parse", version = "0.1.0"}
 walkdir = "2.3.3"
 Inflector = "0.11.4"
+
+[dev-dependencies]
+criterion = "0.4"
+walkdir = "2.3.3"
+
+[[bench]]
+name = "my_benchmark"
+harness = false
