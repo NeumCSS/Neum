@@ -267,7 +267,6 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
     cache: &mut HashMap<String, Option<String>>,
     input: S,
 ) -> Option<String> {
-
     if let Some(item) = cache.get(input.as_ref()) {
         return item.clone();
     }
@@ -343,16 +342,15 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
         if !returns.ends_with(';') {
             returns.push(';');
         }
-        let data =
-            returns
-                .trim()
-                .to_string()
-                .replace("; ", ";")
-                .replace(": ", ":")
-                .replace(" {", "{")
-                .replace("{ ", "{");
+        let data = returns
+            .trim()
+            .to_string()
+            .replace("; ", ";")
+            .replace(": ", ":")
+            .replace(" {", "{")
+            .replace("{ ", "{");
         cache.insert(input.as_ref().to_string(), Some(data.clone()));
-        return Some(data)
+        return Some(data);
     }
     cache.insert(input.as_ref().to_string(), None);
     None
