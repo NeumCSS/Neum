@@ -37,7 +37,7 @@ pub fn watch() {
                     }
                 }
                 if changed {
-                    update();
+                    update(true);
                 }
             }
         });
@@ -59,6 +59,7 @@ pub fn watch() {
 
     for event in rx.into_iter().flatten() {
         let mut changed = false;
+        let mut refresh = false;
         for e in event {
             if !excludes(e.path.clone()) {
                 let e = e.path.strip_prefix(current.clone()).unwrap().to_path_buf();
@@ -73,12 +74,13 @@ pub fn watch() {
                             eprintln!("{e}");
                         }
                         changed = true;
+                        refresh = true;
                     }
                 }
             }
         }
         if changed {
-            update();
+            update(refresh);
         }
     }
 }
@@ -121,7 +123,7 @@ pub fn init() {
             }
         }
     }
-    update();
+    update(false);
 }
 
 fn excludes(path: PathBuf) -> bool {
