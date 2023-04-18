@@ -264,8 +264,14 @@ pub fn parse<S: AsRef<str>>(
 pub fn converts<S: AsRef<str> + std::fmt::Display>(
     parsed: Vec<(Name, Vec<Token>)>,
     consts: HashMap<String, Vec<Token>>,
+    cache: &mut HashMap<String, Option<String>>,
     input: S,
 ) -> Option<String> {
+
+    if let Some(item) = cache.get(input.as_ref()) {
+        return item.clone();
+    }
+
     let mut variables = HashMap::new();
     let mut tokens = Vec::new();
     let mut returns_iter = None;
@@ -307,6 +313,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                 Token::FullReplacementStart => full_replacement(
                     parsed.clone(),
                     consts.clone(),
+                    cache,
                     &mut returns_iter,
                     variables.clone(),
                     tokens.clone(),
@@ -336,22 +343,25 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
         if !returns.ends_with(';') {
             returns.push(';');
         }
-        return Some(
+        let data =
             returns
                 .trim()
                 .to_string()
                 .replace("; ", ";")
                 .replace(": ", ":")
                 .replace(" {", "{")
-                .replace("{ ", "{"),
-        );
+                .replace("{ ", "{");
+        cache.insert(input.as_ref().to_string(), Some(data.clone()));
+        return Some(data)
     }
+    cache.insert(input.as_ref().to_string(), None);
     None
 }
 
 fn full_replacement(
     parsed: Vec<(Name, Vec<Token>)>,
     consts: HashMap<String, Vec<Token>>,
+    cache: &mut HashMap<String, Option<String>>,
     returns_iter: &mut Iter<Token>,
     variables: HashMap<String, String>,
     i: Vec<Token>,
@@ -382,6 +392,7 @@ fn full_replacement(
             Token::FullReplacementStart => full_replacement(
                 parsed.clone(),
                 consts.clone(),
+                cache,
                 returns_iter,
                 variables.clone(),
                 i.clone(),
@@ -389,7 +400,7 @@ fn full_replacement(
             _ => "".to_string(),
         });
     }
-    let returns = converts(parsed, consts, search)?;
+    let returns = converts(parsed, consts, cache, search)?;
     let mut chars = returns.chars();
     chars.next_back();
     Some(chars.as_str().to_string())

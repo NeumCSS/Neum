@@ -90,7 +90,7 @@ impl Default for Neum {{
     /// assert_eq!(Neum::default().convert(\"w-50%\"), Some(String::from(\"width:50%;\")));
     /// ```
     fn default() -> Self {{
-        Neum {{ converts: vec![{text}], consts: [{consts_text}].into_iter().collect() }}
+        Neum {{ converts: vec![{text}], consts: [{consts_text}].into_iter().collect(), cache: hashbrown::HashMap::new() }}
     }}
 }}
 "

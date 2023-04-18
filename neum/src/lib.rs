@@ -6,13 +6,13 @@
 //! use neum::*;
 //! let file = "width.neum"; // Used just for giving errors
 //! let content = std::fs::read_to_string(file.clone()).expect("Cant read file");
-//! let neum = Neum::new(&content, Some(&file.to_string())).unwrap();
+//! let mut neum = Neum::new(&content, Some(&file.to_string())).unwrap();
 //! assert_eq!(neum.convert("w-50%"), Some(String::from("width:50%;")));
 //! ```
 //!
 //! ```no_run
 //! use neum::*;
-//! let neum = Neum::default();
+//! let mut neum = Neum::default();
 //! assert_eq!(neum.convert("w-50%"), Some(String::from("width:50%;")));
 //! ```
 //!

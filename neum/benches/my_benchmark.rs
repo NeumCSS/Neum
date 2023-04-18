@@ -23,9 +23,9 @@ fn parsing_files(c: &mut Criterion) {
 }
 
 fn convert(c: &mut Criterion) {
-    let default = Neum::default();
     c.bench_function("convert", |b| {
         b.iter(|| {
+            let mut default = Neum::default();
             for i in vec![
                 "m-0",
                 "ds-lg",

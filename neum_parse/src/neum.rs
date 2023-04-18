@@ -6,6 +6,9 @@ pub struct Neum {
 
     #[doc(hidden)]
     pub consts: hashbrown::HashMap<std::string::String, Vec<lexer::Token>>,
+
+    #[doc(hidden)]
+    pub cache: hashbrown::HashMap<std::string::String, Option<std::string::String>>,
 }
 
 impl Neum {
@@ -17,13 +20,41 @@ impl Neum {
     pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
         let file = file.map(|x| x.as_ref().to_string());
         let output = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
-        Ok(Neum { converts: output.dynamics, consts: output.statics })
+        Ok(Neum { converts: output.dynamics, consts: output.statics, cache: hashbrown::HashMap::new() })
+    }
+
+    /// Refresh the cache so that if a definition changed it will actually give a different responce
+    /// ```
+    /// # use neum_parse::*;
+    /// let mut neum = Neum::new("w-{} => width: {}px", None).unwrap();
+    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
+    /// assert_eq!(neum.convert("mw-5"), None);
+    /// ```
+    /// This will also match the first item it gets
+    /// ```
+    /// # use neum_parse::*;
+    /// let mut neum = Neum::new("w-{}% => width: {}%", None).unwrap();
+    /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%;")));
+    /// assert_eq!(neum.convert("w-5px"), None);
+    ///
+    /// neum.add("w-{}px => width: {}px", None).unwrap();
+    ///
+    /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%;")));
+    /// assert_eq!(neum.convert("w-5px"), None);
+    ///
+    /// neum.refresh();
+    ///
+    /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%;")));
+    /// assert_eq!(neum.convert("w-5px"), Some(String::from("width:5px;")));
+    /// ```
+    pub fn refresh(&mut self) {
+        self.cache = hashbrown::HashMap::new();
     }
 
     /// Takes your current Neum object and finds your input and gives the output
     /// ```
     /// # use neum_parse::*;
-    /// let neum = Neum::new("w-{} => width: {}px", None).unwrap();
+    /// let mut neum = Neum::new("w-{} => width: {}px", None).unwrap();
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("mw-5"), None);
     /// ```
@@ -40,8 +71,8 @@ impl Neum {
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%px;")));
     /// ```
-    pub fn convert<S: AsRef<str>>(&self, input: S) -> Option<std::string::String> {
-        parse::converts(self.converts.clone(), self.consts.clone(), input.as_ref())
+    pub fn convert<S: AsRef<str>>(&mut self, input: S) -> Option<std::string::String> {
+        parse::converts(self.converts.clone(), self.consts.clone(), &mut self.cache, input.as_ref())
     }
 
     /// Add some more Neum definitions to your Neum object, this will also add your item to the lowest priority
@@ -52,6 +83,8 @@ impl Neum {
     /// assert_eq!(neum.convert("mw-5"), None);
     ///
     /// neum.add("mw-{} => max-width: {}px", None).unwrap();
+    /// neum.refresh();
+    ///
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("mw-5"), Some(String::from("max-width:5px;")));
     /// ```
@@ -61,7 +94,8 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        self.converts.append(&mut neum.converts);
+        neum.converts.append(&mut self.converts);
+        self.converts = neum.converts;
         Ok(())
     }
     
@@ -84,8 +118,7 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        neum.converts.append(&mut self.converts);
-        self.converts = neum.converts;
+        self.converts.append(&mut neum.converts);
         Ok(())
     }
 
@@ -93,7 +126,8 @@ impl Neum {
     pub fn empty() -> Neum {
         Neum {
             converts: Vec::new(),
-            consts: hashbrown::HashMap::new()
+            consts: hashbrown::HashMap::new(),
+            cache: hashbrown::HashMap::new()
         }
     }
 
@@ -108,7 +142,7 @@ impl Neum {
     /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
     ///
     /// // Note that file_two is going to have less priority to file_one
-    /// let neum = Neum::empty().combine(file_one).combine(file_two);
+    /// let mut neum = Neum::empty().combine(file_one).combine(file_two);
     ///
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("h-5"), Some(String::from("height:5px;")));
@@ -123,7 +157,7 @@ impl Neum {
         let neum_clone_consts = neum.consts;
         let mut self_clone_consts = self.consts;
         self_clone_consts.extend(neum_clone_consts);
-        Neum{converts:self_clone, consts: self_clone_consts}
+        Neum{converts:self_clone, consts: self_clone_consts, cache: self.cache}
     }
 
     /// Combine two Neum items, the first item has priority over the others
@@ -137,7 +171,7 @@ impl Neum {
     /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
-    /// let neum = Neum::empty().combine(file_one).combine_priority(file_two);
+    /// let mut neum = Neum::empty().combine(file_one).combine_priority(file_two);
     ///
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("h-5"), Some(String::from("height:5px;")));
@@ -152,6 +186,6 @@ impl Neum {
         let mut neum_clone_consts = neum.consts;
         let self_clone_consts = self.consts;
         neum_clone_consts.extend(self_clone_consts);
-        Neum{converts:neum_clone, consts: neum_clone_consts}
+        Neum{converts:neum_clone, consts: neum_clone_consts, cache: self.cache}
     }
 }
