@@ -49,6 +49,8 @@ pub fn update(refresh: bool) {
             .clone()
             .combine_priority(libraries)
             .combine_priority(other);
+
+        total_neum.refresh();
     }
 
     for i in total_classes {

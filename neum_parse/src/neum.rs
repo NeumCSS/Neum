@@ -96,6 +96,8 @@ impl Neum {
         let mut neum = Neum::new(content, file)?;
         neum.converts.append(&mut self.converts);
         self.converts = neum.converts;
+        neum.consts.extend(self.consts.clone());
+        self.consts = neum.consts;
         Ok(())
     }
     
@@ -119,6 +121,7 @@ impl Neum {
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
         self.converts.append(&mut neum.converts);
+        self.consts.extend(neum.consts.clone());
         Ok(())
     }
 
@@ -153,11 +156,11 @@ impl Neum {
     ) -> Neum {
         let mut neum_clone = neum.converts;
         let mut self_clone = self.converts;
-        self_clone.append(&mut neum_clone);
-        let neum_clone_consts = neum.consts;
-        let mut self_clone_consts = self.consts;
-        self_clone_consts.extend(neum_clone_consts);
-        Neum{converts:self_clone, consts: self_clone_consts, cache: self.cache}
+        neum_clone.append(&mut self_clone);
+        let mut neum_clone_consts = neum.consts;
+        let self_clone_consts = self.consts;
+        neum_clone_consts.extend(self_clone_consts.clone());
+        Neum{converts:neum_clone, consts: neum_clone_consts, cache: self.cache}
     }
 
     /// Combine two Neum items, the first item has priority over the others
@@ -182,10 +185,10 @@ impl Neum {
     ) -> Neum {
         let mut neum_clone = neum.converts;
         let mut self_clone = self.converts;
-        neum_clone.append(&mut self_clone);
-        let mut neum_clone_consts = neum.consts;
-        let self_clone_consts = self.consts;
-        neum_clone_consts.extend(self_clone_consts);
-        Neum{converts:neum_clone, consts: neum_clone_consts, cache: self.cache}
+        self_clone.append(&mut neum_clone);
+        let neum_clone_consts = neum.consts;
+        let mut self_clone_consts = self.consts;
+        self_clone_consts.extend(neum_clone_consts);
+        Neum{converts:self_clone, consts: self_clone_consts, cache: self.cache}
     }
 }
