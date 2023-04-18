@@ -26,15 +26,15 @@ fn main() {
             files.push(i.clone());
             let content = fs::read_to_string(file.clone())
                 .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
-            let (mut tokens, file_consts) = parse::parse(
+            let output = parse::parse(
                 lexer::lex(Some(&file.clone()), &content.clone()).unwrap(),
                 Some(&file),
                 &content,
             )
             .unwrap();
-            tokens = tokens.into_iter().rev().collect();
+            let mut tokens = output.dynamics.into_iter().rev().collect();
             total.append(&mut tokens);
-            consts.extend(file_consts);
+            consts.extend(output.statics);
         }
     }
     let mut text = String::new();

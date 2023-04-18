@@ -12,11 +12,18 @@ pub struct Name {
     pub variables: Vec<String>,
 }
 
+#[doc(hidden)]
+#[derive(Debug, Clone)]
+pub struct Parse {
+    pub dynamics: Vec<(Name, Vec<Token>)>,
+    pub statics: HashMap<String, Vec<Token>>,
+}
+
 pub fn parse<S: AsRef<str>>(
     tokens: Vec<(Token, Range<usize>)>,
     file: Option<S>,
     content: S,
-) -> Result<(Vec<(Name, Vec<Token>)>, HashMap<String, Vec<Token>>), NeumError> {
+) -> Result<Parse, NeumError> {
     let file = file.map(|x| x.as_ref().to_string());
     let mut list = Vec::new();
     let mut consts = HashMap::new();
@@ -248,7 +255,10 @@ pub fn parse<S: AsRef<str>>(
             }
         }
     }
-    Ok((list, consts))
+    Ok(Parse {
+        dynamics: list,
+        statics: consts,
+    })
 }
 
 pub fn converts<S: AsRef<str> + std::fmt::Display>(
@@ -379,7 +389,7 @@ fn full_replacement(
             _ => "".to_string(),
         });
     }
-    let returns = converts(parsed.clone(), consts.clone(), search)?;
+    let returns = converts(parsed, consts, search)?;
     let mut chars = returns.chars();
     chars.next_back();
     Some(chars.as_str().to_string())
@@ -401,55 +411,49 @@ fn replacement(
     if next == &Token::ReplacementEnd {
         (*variables
             .get("")
-            .unwrap_or_else(|| panic!("Internal Error\nCould not find variable \"\" in {:?}", i)))
+            .unwrap_or_else(|| panic!("Internal Error\nCould not find variable \"\" in {i:?}")))
         .clone()
     } else {
         let mut next_value = false;
         let value = match next {
             Token::String(w) => (*variables.get(w).unwrap_or_else(|| {
-                panic!(
-                    "Internal Error\nCould not find variable \"{}\" in {:?}",
-                    w, i
-                )
+                panic!("Internal Error\nCould not find variable \"{w}\" in {i:?}")
             }))
             .to_string(),
             Token::Number(n) => n.to_string(),
             Token::Add => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
+                    panic!("Internal Error\nCould not find variable \"\" in {i:?}")
                 }))
                 .to_string()
             }
             Token::Subtract => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
+                    panic!("Internal Error\nCould not find variable \"\" in {i:?}")
                 }))
                 .to_string()
             }
             Token::Times => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
+                    panic!("Internal Error\nCould not find variable \"\" in {i:?}")
                 }))
                 .to_string()
             }
             Token::Divide => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
+                    panic!("Internal Error\nCould not find variable \"\" in {i:?}")
                 }))
                 .to_string()
             }
-            _ => panic!("Internal Error\nDont know what {:?} is in {:?}", next, i),
+            _ => panic!("Internal Error\nDont know what {next:?} is in {i:?}"),
         };
         if returns_iter.len() > 0 {
             let mut int_value = value.parse::<f64>().unwrap_or_else(|_| {
-                panic!(
-                    "Internal Error\nCant do multipul things to a string, \"{}\", in {:?}",
-                    value, i
-                )
+                panic!("Internal Error\nCant do multipul things to a string, \"{value}\", in {i:?}")
             });
             if next_value {
                 let next_value = match returns_iter
@@ -459,16 +463,12 @@ fn replacement(
                     Token::String(w) => variables
                         .get(w)
                         .unwrap_or_else(|| {
-                            panic!(
-                                "Internal Error\nCould not find variable \"{}\" in {:?}",
-                                w, i
-                            )
+                            panic!("Internal Error\nCould not find variable \"{w}\" in {i:?}")
                         })
                         .parse::<f64>()
                         .unwrap_or_else(|_| {
                             panic!(
-                                "Internal Error\nCould not convert variable \"{}\" in {:?} to f64",
-                                w, i
+                                "Internal Error\nCould not convert variable \"{w}\" in {i:?} to f64"
                             )
                         }),
                     Token::Number(w) => *w,
@@ -503,16 +503,12 @@ fn replacement(
                     Token::String(w) => variables
                         .get(w)
                         .unwrap_or_else(|| {
-                            panic!(
-                                "Internal Error\nCould not find variable \"{}\" in {:?}",
-                                w, i
-                            )
+                            panic!("Internal Error\nCould not find variable \"{w}\" in {i:?}")
                         })
                         .parse::<f64>()
                         .unwrap_or_else(|_| {
                             panic!(
-                                "Internal Error\nCould not convert variable \"{}\" in {:?} to f64",
-                                w, i
+                                "Internal Error\nCould not convert variable \"{w}\" in {i:?} to f64"
                             )
                         }),
                     Token::Number(w) => *w,

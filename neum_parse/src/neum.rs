@@ -17,7 +17,7 @@ impl Neum {
     pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
         let file = file.map(|x| x.as_ref().to_string());
         let output = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
-        Ok(Neum { converts: output.0, consts: output.1 })
+        Ok(Neum { converts: output.dynamics, consts: output.statics })
     }
 
     /// Takes your current Neum object and finds your input and gives the output
