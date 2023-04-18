@@ -11,7 +11,10 @@ use crate::html_parse;
 use crate::neum_parse;
 
 pub fn watch() {
+    let current = std::env::current_dir().unwrap();
+
     if let Some(neum_folder) = &ARGS.neum_folder {
+        let current = current.clone();
         thread::spawn(move || {
             let (tx, rx) = std::sync::mpsc::channel();
 
@@ -23,13 +26,18 @@ pub fn watch() {
                 .unwrap();
 
             for event in rx.into_iter().flatten() {
+                let mut changed = false;
                 for e in event {
-                    if e.path.ends_with(".neum") {
-                        if let Err(e) = neum_parse::update_neum(e.path.clone()) {
+                    let e = e.path.strip_prefix(current.clone()).unwrap().to_path_buf();
+                    if e.ends_with(".neum") {
+                        if let Err(e) = neum_parse::update_neum(e.clone()) {
                             eprintln!("{e}");
                         }
-                        update();
+                        changed = true;
                     }
+                }
+                if changed {
+                    update();
                 }
             }
         });
@@ -50,22 +58,27 @@ pub fn watch() {
         .unwrap();
 
     for event in rx.into_iter().flatten() {
+        let mut changed = false;
         for e in event {
             if !excludes(e.path.clone()) {
-                if let Some(extension) = e.path.extension() {
+                let e = e.path.strip_prefix(current.clone()).unwrap().to_path_buf();
+                if let Some(extension) = e.extension() {
                     if extension == "html" || extension == "htm" || extension == "xhtml" {
-                        if html_parse::update_html(e.path.clone()).is_err() {
-                            eprintln!("Failded to parse {}", e.path.display());
+                        if html_parse::update_html(e.clone()).is_err() {
+                            eprintln!("Failded to parse {}", e.display());
                         }
-                        update();
+                        changed = true;
                     } else if extension == "neum" && ARGS.neum_folder.is_none() {
-                        if let Err(e) = neum_parse::update_neum(e.path.clone()) {
+                        if let Err(e) = neum_parse::update_neum(e.clone()) {
                             eprintln!("{e}");
                         }
-                        update();
+                        changed = true;
                     }
                 }
             }
+        }
+        if changed {
+            update();
         }
     }
 }
