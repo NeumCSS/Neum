@@ -31,12 +31,10 @@ pub fn update() {
     let mut other = neum::Neum::empty();
 
     for (path, neum) in neum_files.iter() {
-        if !path
+        if path
             .as_path()
             .components()
-            .filter(|x| *x == Component::Normal(OsStr::new(".neum")))
-            .collect::<Vec<_>>()
-            .is_empty()
+            .any(|x| x == Component::Normal(OsStr::new(".neum")))
         {
             libraries = libraries.combine_priority(neum.clone());
         } else {
