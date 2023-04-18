@@ -4,6 +4,7 @@ use neum_parse::{
 };
 
 use inflector::Inflector;
+use std::collections::HashMap;
 use std::env;
 use std::fs::{self, File};
 use std::io::{BufWriter, Write};
@@ -15,6 +16,7 @@ fn main() {
     let output = Path::new(&out_dir).join("formated.rs");
     let mut file = BufWriter::new(File::create(&output).unwrap());
     let mut files = Vec::new();
+    let mut consts: HashMap<String, Vec<Token>> = HashMap::new();
     for i in walkdir::WalkDir::new(Path::new("src/default")) {
         let i = i
             .as_ref()
@@ -24,15 +26,15 @@ fn main() {
             files.push(i.clone());
             let content = fs::read_to_string(file.clone())
                 .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
-            for i in parse::parse(
+            let (mut tokens, file_consts) = parse::parse(
                 lexer::lex(Some(&file.clone()), &content.clone()).unwrap(),
                 Some(&file),
                 &content,
             )
-            .unwrap()
-            {
-                total.push(i.clone());
-            }
+            .unwrap();
+            tokens = tokens.into_iter().rev().collect();
+            total.append(&mut tokens);
+            consts.extend(file_consts);
         }
     }
     let mut text = String::new();
@@ -60,6 +62,22 @@ fn main() {
             }
         ));
     }
+    let mut consts_text = String::new();
+    for (x, y) in consts.iter() {
+        consts_text.push_str(&format!("(\"{x}\".to_string(), vec![{}]),", {
+            let mut tokens = String::new();
+            for i in y {
+                tokens.push_str(
+                    match i {
+                        Token::String(x) => format!("String({x:?}.to_string()),"),
+                        _ => format!("{i:?},"),
+                    }
+                    .as_str(),
+                );
+            }
+            tokens
+        }));
+    }
     writeln!(
         &mut file,
         "use neum_parse::{{parse::{{*}}, lexer::Token::*}};
@@ -72,7 +90,7 @@ impl Default for Neum {{
     /// assert_eq!(Neum::default().convert(\"w-50%\"), Some(String::from(\"width:50%;\")));
     /// ```
     fn default() -> Self {{
-        Neum {{ converts: vec![{text}] }}
+        Neum {{ converts: vec![{text}], consts: [{consts_text}].into_iter().collect() }}
     }}
 }}
 "

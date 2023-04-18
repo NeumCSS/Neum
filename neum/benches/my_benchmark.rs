@@ -15,18 +15,50 @@ fn parsing_files(c: &mut Criterion) {
             data.push_str(&content);
         }
     }
-    c.bench_function("parse defaults", |b| b.iter(|| {
-        Neum::new(data.clone(), None).unwrap();
-    }));
+    c.bench_function("parse defaults", |b| {
+        b.iter(|| {
+            Neum::new(data.clone(), None).unwrap();
+        })
+    });
 }
 
 fn convert(c: &mut Criterion) {
     let default = Neum::default();
-    c.bench_function("convert", |b| b.iter(|| {
-        for i in vec!["m-0", "ds-lg", "bg-white", "w-screen", "maw-360", "m-auto", "h-32", "h-24", "h-24", "ml-5", "f-left", "center-xy", "ds-lg", "d-flex", "mt--4", "bc-teal", "ds-lg", "w-128", "h-6.5", "r", "rr-none", "bc-teal", "bg-teal", "w-8", "h-8", "r", "rl-none"] {
-            default.convert(i).unwrap();
-        }
-    }));
+    c.bench_function("convert", |b| {
+        b.iter(|| {
+            for i in vec![
+                "m-0",
+                "ds-lg",
+                "bg-white",
+                "w-screen",
+                "maw-360",
+                "m-auto",
+                "h-32",
+                "h-24",
+                "h-24",
+                "ml-5",
+                "f-left",
+                "center-xy",
+                "ds-lg",
+                "d-flex",
+                "mt--4",
+                "bc-teal",
+                "ds-lg",
+                "w-128",
+                "h-6.5",
+                "r",
+                "rr-none",
+                "bc-teal",
+                "bg-teal",
+                "w-8",
+                "h-8",
+                "r",
+                "rl-none",
+            ] {
+                default.convert(i).unwrap();
+            }
+        })
+    });
 }
 
 criterion_group!(benches, parsing_files, convert);

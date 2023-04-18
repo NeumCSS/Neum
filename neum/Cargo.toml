@@ -14,6 +14,7 @@ neum-parse = {path = "../neum_parse", version = "0.1.0"}
 lazy_static = "1.4.0"
 logos = "0.12.1"
 regex = "1.7.3"
+hashbrown = "0.13"
 
 [build-dependencies]
 neum-parse = {path = "../neum_parse", version = "0.1.0"}

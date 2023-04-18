@@ -1,3 +1,4 @@
+use crate::output::update;
 use crate::ARGS;
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
@@ -5,7 +6,6 @@ use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
 use walkdir::WalkDir;
-use crate::output::update;
 
 use crate::html_parse;
 use crate::neum_parse;

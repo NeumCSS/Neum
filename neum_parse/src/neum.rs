@@ -3,6 +3,9 @@
 pub struct Neum {
     #[doc(hidden)]
     pub converts: Vec<(parse::Name, Vec<lexer::Token>)>,
+
+    #[doc(hidden)]
+    pub consts: hashbrown::HashMap<std::string::String, Vec<lexer::Token>>,
 }
 
 impl Neum {
@@ -13,8 +16,8 @@ impl Neum {
     /// ```
     pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
         let file = file.map(|x| x.as_ref().to_string());
-        let converts = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
-        Ok(Neum { converts })
+        let output = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
+        Ok(Neum { converts: output.0, consts: output.1 })
     }
 
     /// Takes your current Neum object and finds your input and gives the output
@@ -38,7 +41,7 @@ impl Neum {
     /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%px;")));
     /// ```
     pub fn convert<S: AsRef<str>>(&self, input: S) -> Option<std::string::String> {
-        parse::converts(self.converts.clone(), input.as_ref())
+        parse::converts(self.converts.clone(), self.consts.clone(), input.as_ref())
     }
 
     /// Add some more Neum definitions to your Neum object, this will also add your item to the lowest priority
@@ -89,7 +92,8 @@ impl Neum {
     /// Returns a empty Neum type with nothing defined
     pub fn empty() -> Neum {
         Neum {
-            converts: Vec::new()
+            converts: Vec::new(),
+            consts: hashbrown::HashMap::new()
         }
     }
 
@@ -116,7 +120,10 @@ impl Neum {
         let mut neum_clone = neum.converts;
         let mut self_clone = self.converts;
         self_clone.append(&mut neum_clone);
-        Neum{converts:self_clone}
+        let neum_clone_consts = neum.consts;
+        let mut self_clone_consts = self.consts;
+        self_clone_consts.extend(neum_clone_consts);
+        Neum{converts:self_clone, consts: self_clone_consts}
     }
 
     /// Combine two Neum items, the first item has priority over the others
@@ -142,6 +149,9 @@ impl Neum {
         let mut neum_clone = neum.converts;
         let mut self_clone = self.converts;
         neum_clone.append(&mut self_clone);
-        Neum{converts:neum_clone}
+        let mut neum_clone_consts = neum.consts;
+        let self_clone_consts = self.consts;
+        neum_clone_consts.extend(self_clone_consts);
+        Neum{converts:neum_clone, consts: neum_clone_consts}
     }
 }

@@ -1,8 +1,8 @@
 use crate::error::{ErrorType, NeumError};
 use crate::lexer::Token;
 use core::slice::Iter;
+use hashbrown::HashMap;
 use regex::Regex;
-use std::collections::HashMap;
 use std::ops::Range;
 
 #[doc(hidden)]
@@ -16,9 +16,10 @@ pub fn parse<S: AsRef<str>>(
     tokens: Vec<(Token, Range<usize>)>,
     file: Option<S>,
     content: S,
-) -> Result<Vec<(Name, Vec<Token>)>, NeumError> {
+) -> Result<(Vec<(Name, Vec<Token>)>, HashMap<String, Vec<Token>>), NeumError> {
     let file = file.map(|x| x.as_ref().to_string());
     let mut list = Vec::new();
+    let mut consts = HashMap::new();
     let mut token = tokens.iter();
     while let Some(next) = token.next() {
         match next.0 {
@@ -36,10 +37,13 @@ pub fn parse<S: AsRef<str>>(
 
                 let mut variables: Vec<String> = Vec::new();
                 let mut regex = "^".to_string();
+                let mut text = String::new();
                 let mut name_iter = name.iter();
+                let mut is_const = true;
                 while let Some(i) = name_iter.next() {
                     let value = match &i.0 {
                         Token::ReplacementStart => {
+                            is_const = false;
                             let next = name_iter
                                 .next()
                                 .ok_or_else(|| {
@@ -99,11 +103,11 @@ pub fn parse<S: AsRef<str>>(
                             Ok("(.*)".to_string())
                         }
                         Token::Add => Ok("+".to_string()),
-                        Token::Subtract => Ok(r"\-".to_string()),
-                        Token::Times => Ok(r"\*".to_string()),
+                        Token::Subtract => Ok(r"-".to_string()),
+                        Token::Times => Ok(r"*".to_string()),
                         Token::Divide => Ok("/".to_string()),
-                        Token::Number(x) => Ok(regex::escape(x.to_string().as_str())),
-                        Token::String(x) => Ok(regex::escape(x)),
+                        Token::Number(x) => Ok(x.to_string()),
+                        Token::String(x) => Ok(x.clone()),
                         Token::Space => Ok("".to_string()),
                         _ => Err(NeumError::new(
                             ErrorType::UnexpectedToken,
@@ -113,7 +117,20 @@ pub fn parse<S: AsRef<str>>(
                         )),
                     };
                     match value {
-                        Ok(x) => regex.push_str(x.as_str()),
+                        Ok(x) => {
+                            text.push_str(x.as_str());
+                            if matches!(
+                                i.0,
+                                Token::Subtract
+                                    | Token::Times
+                                    | Token::Number(_)
+                                    | Token::String(_)
+                            ) {
+                                regex.push_str(&regex::escape(&x));
+                            } else {
+                                regex.push_str(&x);
+                            }
+                        }
                         Err(x) => return Err(x),
                     }
                 }
@@ -150,7 +167,7 @@ pub fn parse<S: AsRef<str>>(
                     Token::MultiEqualStart => {
                         multiequal_count += 1;
                         Token::MultiEqualEnd
-                    },
+                    }
                     _ => {
                         convert_to.push(first.clone());
                         Token::NewLine
@@ -161,11 +178,14 @@ pub fn parse<S: AsRef<str>>(
                     last = i;
                     if i.0 == Token::MultiEqualStart {
                         multiequal_count += 1;
-                    }
-                    else if i.0 == Token::MultiEqualEnd {
+                    } else if i.0 == Token::MultiEqualEnd {
                         multiequal_count -= 1;
                     }
-                    if !(i.0 == go_to && !(go_to == Token::MultiEqualEnd && i.0 == Token::MultiEqualEnd && multiequal_count != 0)) {
+                    if !(i.0 == go_to
+                        && !(go_to == Token::MultiEqualEnd
+                            && i.0 == Token::MultiEqualEnd
+                            && multiequal_count != 0))
+                    {
                         if !matches!(
                             i.0,
                             Token::ReplacementStart
@@ -205,14 +225,18 @@ pub fn parse<S: AsRef<str>>(
                         last.1.end..last.1.end + 1,
                     ));
                 }
-                list.push((
-                    Name {
-                        regex: Regex::new(&regex)
-                            .expect("Internal error, could not make regex from input"),
-                        variables,
-                    },
-                    convert_to,
-                ));
+                if is_const {
+                    consts.insert(text, convert_to);
+                } else {
+                    list.push((
+                        Name {
+                            regex: Regex::new(&regex)
+                                .expect("Internal error, could not make regex from input"),
+                            variables,
+                        },
+                        convert_to,
+                    ));
+                }
             }
             _ => {
                 return Err(NeumError::new(
@@ -224,105 +248,119 @@ pub fn parse<S: AsRef<str>>(
             }
         }
     }
-    Ok(list)
+    Ok((list, consts))
 }
 
 pub fn converts<S: AsRef<str> + std::fmt::Display>(
     parsed: Vec<(Name, Vec<Token>)>,
+    consts: HashMap<String, Vec<Token>>,
     input: S,
 ) -> Option<String> {
-    for i in &parsed {
-        if let Some(caps) = i.0.regex.captures(input.as_ref()) {
-            let mut caps_iter = caps.iter();
-            caps_iter.next();
-            let mut variables = HashMap::new();
-            for x in i.0.variables.clone() {
-                variables.insert(
-                    x,
-                    caps_iter
-                        .next()
-                        .unwrap_or_else(|| {
-                            panic!("Internal Error\ninput: {input}\nregex: {:?}", i.0.regex)
-                        })
-                        .unwrap_or_else(|| {
-                            panic!("Internal Error\ninput: {input}\nregex: {}", i.0.regex)
-                        })
-                        .as_str()
-                        .to_string(),
-                );
-            }
-            let mut returns = String::new();
-            let mut returns_iter = i.1.iter();
-            while let Some(x) = returns_iter.next() {
-                let is_replacement = x == &Token::FullReplacementStart;
-                let adds = match x {
-                        Token::FullReplacementStart => full_replacement(parsed.clone(), &mut returns_iter, variables.clone(), i)?,
-                        Token::ReplacementStart => {
-                            replacement(&mut returns_iter, variables.clone(), i)
-                        }
-                        Token::Add => "+".to_string(),
-                        Token::Subtract => r"\-".to_string(),
-                        Token::Times => r"\*".to_string(),
-                        Token::Divide => "/".to_string(),
-                        Token::Number(x) => x.to_string(),
-                        Token::String(x) => x.clone(),
-                        Token::SemiColon => ";".to_string(),
-                        Token::NewLine => ";".to_string(),
-                        Token::Space => " ".to_string(),
-                        Token::MultiEqualStart => "{".to_string(),
-                        Token::MultiEqualEnd => "}".to_string(),
-                        _ => "".to_string(),
-                    };
-                if is_replacement && (adds.starts_with('.') || adds.starts_with('@')) {
-                    returns = format!("{adds}{returns}");
+    let mut variables = HashMap::new();
+    let mut tokens = Vec::new();
+    let mut returns_iter = None;
+
+    if let Some(x) = consts.get(input.as_ref()) {
+        tokens = x.to_vec();
+        returns_iter = Some(x.iter());
+    } else {
+        for i in &parsed {
+            if let Some(caps) = i.0.regex.captures(input.as_ref()) {
+                let mut caps_iter = caps.iter();
+                caps_iter.next();
+                for x in i.0.variables.clone() {
+                    variables.insert(
+                        x,
+                        caps_iter
+                            .next()
+                            .unwrap_or_else(|| {
+                                panic!("Internal Error\ninput: {input}\nregex: {:?}", i.0.regex)
+                            })
+                            .unwrap_or_else(|| {
+                                panic!("Internal Error\ninput: {input}\nregex: {}", i.0.regex)
+                            })
+                            .as_str()
+                            .to_string(),
+                    );
                 }
-                else {
-                    returns.push_str(adds.as_str());
-                }
+                returns_iter = Some(i.1.iter());
+                tokens = i.1.clone();
             }
-            if !returns.ends_with(';') {
-                returns.push(';');
-            }
-            return Some(
-                returns
-                    .trim()
-                    .to_string()
-                    .replace("; ", ";")
-                    .replace(": ", ":")
-                    .replace(" {", "{")
-                    .replace("{ ", "{"),
-            );
         }
+    }
+    if let Some(mut returns_iter) = returns_iter {
+        let mut returns = String::new();
+
+        while let Some(x) = returns_iter.next() {
+            let is_replacement = x == &Token::FullReplacementStart;
+            let adds = match x {
+                Token::FullReplacementStart => full_replacement(
+                    parsed.clone(),
+                    consts.clone(),
+                    &mut returns_iter,
+                    variables.clone(),
+                    tokens.clone(),
+                )?,
+                Token::ReplacementStart => {
+                    replacement(&mut returns_iter, variables.clone(), tokens.clone())
+                }
+                Token::Add => "+".to_string(),
+                Token::Subtract => r"\-".to_string(),
+                Token::Times => r"\*".to_string(),
+                Token::Divide => "/".to_string(),
+                Token::Number(x) => x.to_string(),
+                Token::String(x) => x.clone(),
+                Token::SemiColon => ";".to_string(),
+                Token::NewLine => ";".to_string(),
+                Token::Space => " ".to_string(),
+                Token::MultiEqualStart => "{".to_string(),
+                Token::MultiEqualEnd => "}".to_string(),
+                _ => "".to_string(),
+            };
+            if is_replacement && (adds.starts_with('.') || adds.starts_with('@')) {
+                returns = format!("{adds}{returns}");
+            } else {
+                returns.push_str(adds.as_str());
+            }
+        }
+        if !returns.ends_with(';') {
+            returns.push(';');
+        }
+        return Some(
+            returns
+                .trim()
+                .to_string()
+                .replace("; ", ";")
+                .replace(": ", ":")
+                .replace(" {", "{")
+                .replace("{ ", "{"),
+        );
     }
     None
 }
 
 fn full_replacement(
     parsed: Vec<(Name, Vec<Token>)>,
+    consts: HashMap<String, Vec<Token>>,
     returns_iter: &mut Iter<Token>,
     variables: HashMap<String, String>,
-    i: &(Name, Vec<Token>),
+    i: Vec<Token>,
 ) -> Option<String> {
     let mut search = String::new();
     let mut y = 1;
     while let Some(x) = returns_iter.next() {
         if x == &Token::FullReplacementStart {
-            y+=1;
+            y += 1;
         }
         if x == &Token::FullReplacementEnd {
             if y == 1 {
                 break;
-            }
-            else {
-                y-=1;
+            } else {
+                y -= 1;
             }
         }
         search.push_str(&match x {
-            Token::ReplacementStart => replacement(
-                returns_iter,
-                variables.clone(),
-                &i.clone(),
-            ),
+            Token::ReplacementStart => replacement(returns_iter, variables.clone(), i.clone()),
             Token::Add => "+".to_string(),
             Token::Subtract => r"\-".to_string(),
             Token::Times => r"\*".to_string(),
@@ -331,11 +369,17 @@ fn full_replacement(
             Token::String(x) => x.clone(),
             Token::SemiColon => ";".to_string(),
             Token::NewLine => ";".to_string(),
-            Token::FullReplacementStart => full_replacement(parsed.clone(), returns_iter, variables.clone(), i)?,
+            Token::FullReplacementStart => full_replacement(
+                parsed.clone(),
+                consts.clone(),
+                returns_iter,
+                variables.clone(),
+                i.clone(),
+            )?,
             _ => "".to_string(),
         });
     }
-    let returns = converts(parsed.clone(), search)?;
+    let returns = converts(parsed.clone(), consts.clone(), search)?;
     let mut chars = returns.chars();
     chars.next_back();
     Some(chars.as_str().to_string())
@@ -344,7 +388,7 @@ fn full_replacement(
 fn replacement(
     returns_iter: &mut Iter<Token>,
     variables: HashMap<String, String>,
-    i: &(Name, Vec<Token>),
+    i: Vec<Token>,
 ) -> String {
     let mut next = returns_iter
         .next()
@@ -357,7 +401,7 @@ fn replacement(
     if next == &Token::ReplacementEnd {
         (*variables
             .get("")
-            .unwrap_or_else(|| panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)))
+            .unwrap_or_else(|| panic!("Internal Error\nCould not find variable \"\" in {:?}", i)))
         .clone()
     } else {
         let mut next_value = false;
@@ -365,7 +409,7 @@ fn replacement(
             Token::String(w) => (*variables.get(w).unwrap_or_else(|| {
                 panic!(
                     "Internal Error\nCould not find variable \"{}\" in {:?}",
-                    w, i.1
+                    w, i
                 )
             }))
             .to_string(),
@@ -373,38 +417,38 @@ fn replacement(
             Token::Add => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
+                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
                 }))
                 .to_string()
             }
             Token::Subtract => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
+                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
                 }))
                 .to_string()
             }
             Token::Times => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
+                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
                 }))
                 .to_string()
             }
             Token::Divide => {
                 next_value = true;
                 (*variables.get("").unwrap_or_else(|| {
-                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i.1)
+                    panic!("Internal Error\nCould not find variable \"\" in {:?}", i)
                 }))
                 .to_string()
             }
-            _ => panic!("Internal Error\nDont know what {:?} is in {:?}", next, i.1),
+            _ => panic!("Internal Error\nDont know what {:?} is in {:?}", next, i),
         };
         if returns_iter.len() > 0 {
             let mut int_value = value.parse::<f64>().unwrap_or_else(|_| {
                 panic!(
                     "Internal Error\nCant do multipul things to a string, \"{}\", in {:?}",
-                    value, i.1
+                    value, i
                 )
             });
             if next_value {
@@ -417,14 +461,14 @@ fn replacement(
                         .unwrap_or_else(|| {
                             panic!(
                                 "Internal Error\nCould not find variable \"{}\" in {:?}",
-                                w, i.1
+                                w, i
                             )
                         })
                         .parse::<f64>()
                         .unwrap_or_else(|_| {
                             panic!(
                                 "Internal Error\nCould not convert variable \"{}\" in {:?} to f64",
-                                w, i.1
+                                w, i
                             )
                         }),
                     Token::Number(w) => *w,
@@ -461,14 +505,14 @@ fn replacement(
                         .unwrap_or_else(|| {
                             panic!(
                                 "Internal Error\nCould not find variable \"{}\" in {:?}",
-                                w, i.1
+                                w, i
                             )
                         })
                         .parse::<f64>()
                         .unwrap_or_else(|_| {
                             panic!(
                                 "Internal Error\nCould not convert variable \"{}\" in {:?} to f64",
-                                w, i.1
+                                w, i
                             )
                         }),
                     Token::Number(w) => *w,

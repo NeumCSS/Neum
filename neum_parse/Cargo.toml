@@ -11,3 +11,4 @@ respository = "https://github.com/Neum-CSS/Neum"
 [dependencies]
 logos = "0.12.1"
 regex = "1.7.3"
+hashbrown = "0.13"
