@@ -7,5 +7,7 @@ mod watcher;
 
 fn main() {
     watcher::init();
-    watcher::watch();
+    if ARGS.watch {
+        watcher::watch();
+    }
 }

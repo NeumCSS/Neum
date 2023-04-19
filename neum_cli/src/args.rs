@@ -24,6 +24,10 @@ pub struct Args {
     /// Show extra information
     #[clap(short, long, value_parser, default_value_t = false)]
     pub verbose: bool,
+
+    /// Automatically look for files to change then update your outputed css (setting this will make it not watch)
+    #[clap(short, long, value_parser, default_value_t = true, action=clap::ArgAction::SetFalse)]
+    pub watch: bool,
 }
 
 lazy_static! {
