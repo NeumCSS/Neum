@@ -94,10 +94,8 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        neum.converts.append(&mut self.converts);
-        self.converts = neum.converts;
-        neum.consts.extend(self.consts.clone());
-        self.consts = neum.consts;
+        self.converts.append(&mut neum.converts);
+        self.consts.extend(neum.consts.clone());
         Ok(())
     }
     
@@ -120,8 +118,10 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        self.converts.append(&mut neum.converts);
-        self.consts.extend(neum.consts.clone());
+        neum.converts.append(&mut self.converts);
+        self.converts = neum.converts;
+        neum.consts.extend(self.consts.clone());
+        self.consts = neum.consts;
         Ok(())
     }
 
@@ -135,20 +135,16 @@ impl Neum {
     }
 
     /// Combine two Neum items, the first item has priority over the others
-    /// ```no_run
+    /// ```
     /// # use neum_parse::*;
-    /// # use std::fs;
-    /// let file = "width.neum";
-    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
+    /// let file_one = Neum::new("color => red", None).unwrap();
     ///
-    /// let file = "height.neum";
-    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
+    /// let file_two = Neum::new("color => yellow", None).unwrap();
     ///
-    /// // Note that file_two is going to have less priority to file_one
+    /// // Note that file_two is going to have more priority to file_one
     /// let mut neum = Neum::empty().combine(file_one).combine(file_two);
     ///
-    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert("h-5"), Some(String::from("height:5px;")));
+    /// assert_eq!(neum.convert("color"), Some(String::from("red;")));
     /// ```
     pub fn combine(
         self,
@@ -164,20 +160,16 @@ impl Neum {
     }
 
     /// Combine two Neum items, the first item has priority over the others
-    /// ```no_run
+    /// ```
     /// # use neum_parse::*;
-    /// # use std::fs;
-    /// let file = "width.neum";
-    /// let file_one = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
+    /// let file_one = Neum::new("color => red", None).unwrap();
     ///
-    /// let file = "height.neum";
-    /// let file_two = Neum::new(&fs::read_to_string(file).unwrap(), Some(&file.to_string())).unwrap();
+    /// let file_two = Neum::new("color => yellow", None).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
     /// let mut neum = Neum::empty().combine(file_one).combine_priority(file_two);
     ///
-    /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
-    /// assert_eq!(neum.convert("h-5"), Some(String::from("height:5px;")));
+    /// assert_eq!(neum.convert("color"), Some(String::from("yellow;")));
     /// ```
     pub fn combine_priority(
         self,

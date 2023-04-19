@@ -32,7 +32,7 @@ fn main() {
                 &content,
             )
             .unwrap();
-            let mut tokens = output.dynamics.into_iter().rev().collect();
+            let mut tokens = output.dynamics;
             total.append(&mut tokens);
             consts.extend(output.statics);
         }

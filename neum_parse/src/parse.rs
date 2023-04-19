@@ -300,6 +300,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                 }
                 returns_iter = Some(i.1.iter());
                 tokens = i.1.clone();
+                break;
             }
         }
     }
