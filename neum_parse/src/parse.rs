@@ -241,8 +241,10 @@ pub fn parse<S: AsRef<str>>(
                 } else {
                     list.push((
                         Name {
-                            regex: Arc::new(Regex::new(&regex)
-                                .expect("Internal error, could not make regex from input")),
+                            regex: Arc::new(
+                                Regex::new(&regex)
+                                    .expect("Internal error, could not make regex from input"),
+                            ),
                             variables: Arc::new(variables),
                         },
                         convert_to,
