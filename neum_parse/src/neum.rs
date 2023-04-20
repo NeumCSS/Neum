@@ -22,7 +22,7 @@ impl Neum {
     pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
         let file = file.map(|x| x.as_ref().to_string());
         let output = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
-        Ok(Neum { converts: output.dynamics, consts: output.statics, cache: hashbrown::HashMap::new() })
+        Ok(Neum { converts: output.dynamics.to_vec(), consts: output.statics, cache: hashbrown::HashMap::new() })
     }
 
     /// Refresh the cache so that if a definition changed it will actually give a different responce

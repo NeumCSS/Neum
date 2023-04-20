@@ -40,7 +40,7 @@ fn main() {
     let mut text = String::new();
     for i in total {
         text.push_str(&format!(
-            "(Name {{ regex: Regex::new(r\"{}\").unwrap(), variables: vec![{}] }}, vec![{}]),",
+            "(Name {{ regex: Arc::new(Regex::new(r\"{}\").unwrap()), variables: Arc::new(vec![{}]) }}, vec![{}]),",
             i.0.regex,
             i.0.variables
                 .iter()
@@ -82,6 +82,7 @@ fn main() {
         &mut file,
         "use neum_parse::{{parse::{{*}}, lexer::Token::*}};
 use regex::Regex;
+use std::sync::Arc;
 
 impl Default for Neum {{
     /// A Neum object with the default values

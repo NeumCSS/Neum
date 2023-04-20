@@ -5,12 +5,13 @@ use hashbrown::HashMap;
 use regex::Regex;
 use std::ops::Range;
 use std::rc::Rc;
+use std::sync::Arc;
 
 #[doc(hidden)]
 #[derive(Debug, Clone)]
 pub struct Name {
-    pub regex: Regex,
-    pub variables: Vec<String>,
+    pub regex: Arc<Regex>,
+    pub variables: Arc<Vec<String>>,
 }
 
 #[doc(hidden)]
@@ -240,9 +241,9 @@ pub fn parse<S: AsRef<str>>(
                 } else {
                     list.push((
                         Name {
-                            regex: Regex::new(&regex)
-                                .expect("Internal error, could not make regex from input"),
-                            variables,
+                            regex: Arc::new(Regex::new(&regex)
+                                .expect("Internal error, could not make regex from input")),
+                            variables: Arc::new(variables),
                         },
                         convert_to,
                     ));
@@ -288,9 +289,9 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
             if let Some(caps) = i.0.regex.captures(input) {
                 let mut caps_iter = caps.iter();
                 caps_iter.next();
-                for x in i.0.variables.clone() {
+                for x in i.0.variables.iter() {
                     variables.insert(
-                        x,
+                        x.clone(),
                         caps_iter
                             .next()
                             .unwrap_or_else(|| {
