@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 /// This is a Neum converter object
 #[derive(Debug, Clone)]
 pub struct Neum {
@@ -74,7 +76,7 @@ impl Neum {
     /// ```
     #[inline(always)]
     pub fn convert<S: AsRef<str>>(&mut self, input: S) -> Option<std::string::String> {
-        parse::converts(self.converts.clone(), self.consts.clone(), &mut self.cache, input.as_ref())
+        parse::converts(self.converts.clone(), Rc::new(self.consts.clone()), &mut self.cache, input.as_ref())
     }
 
     /// Add some more Neum definitions to your Neum object, this will also add your item to the lowest priority
@@ -98,7 +100,7 @@ impl Neum {
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
         self.converts.append(&mut neum.converts);
-        self.consts.extend(neum.consts.clone());
+        self.consts.extend(neum.consts);
         Ok(())
     }
     

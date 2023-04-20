@@ -4,6 +4,7 @@ use core::slice::Iter;
 use hashbrown::HashMap;
 use regex::Regex;
 use std::ops::Range;
+use std::rc::Rc;
 
 #[doc(hidden)]
 #[derive(Debug, Clone)]
@@ -265,7 +266,7 @@ pub fn parse<S: AsRef<str>>(
 #[inline(always)]
 pub fn converts<S: AsRef<str> + std::fmt::Display>(
     parsed: Vec<(Name, Vec<Token>)>,
-    consts: HashMap<String, Vec<Token>>,
+    consts: Rc<HashMap<String, Vec<Token>>>,
     cache: &mut HashMap<String, Option<String>>,
     input: S,
 ) -> Option<String> {
@@ -306,6 +307,9 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
             }
         }
     }
+
+    let variables = Rc::new(variables);
+
     if let Some(mut returns_iter) = returns_iter {
         let mut returns = String::new();
 
@@ -362,10 +366,10 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
 #[inline(always)]
 fn full_replacement(
     parsed: Vec<(Name, Vec<Token>)>,
-    consts: HashMap<String, Vec<Token>>,
+    consts: Rc<HashMap<String, Vec<Token>>>,
     cache: &mut HashMap<String, Option<String>>,
     returns_iter: &mut Iter<Token>,
-    variables: HashMap<String, String>,
+    variables: Rc<HashMap<String, String>>,
     i: Vec<Token>,
 ) -> Option<String> {
     let mut search = String::new();
@@ -411,7 +415,7 @@ fn full_replacement(
 #[inline(always)]
 fn replacement(
     returns_iter: &mut Iter<Token>,
-    variables: HashMap<String, String>,
+    variables: Rc<HashMap<String, String>>,
     i: Vec<Token>,
 ) -> String {
     let mut next = returns_iter
