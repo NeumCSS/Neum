@@ -4,12 +4,12 @@ use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
 use std::path::Component;
-use std::sync::Mutex;
+use std::sync::{Mutex, Arc};
 use std::time::Instant;
 
 lazy_static::lazy_static! {
-    static ref REAL_DEFAULTS: neum::Neum = neum::Neum::default();
-    static ref DEFAULTS: Mutex<neum::Neum> = Mutex::new(neum::Neum::default());
+    static ref REAL_DEFAULTS: Arc<neum::Neum> = Arc::new(neum::Neum::default());
+    static ref DEFAULTS: Arc<Mutex<neum::Neum>> = Arc::new(Mutex::new(neum::Neum::default()));
 }
 
 pub fn update(refresh: bool) {
@@ -45,10 +45,9 @@ pub fn update(refresh: bool) {
             }
         }
 
-        *total_neum = REAL_DEFAULTS
-            .clone()
-            .combine_priority(libraries)
-            .combine_priority(other);
+        *total_neum = (*REAL_DEFAULTS.clone()).clone();
+        *total_neum = total_neum.clone().combine_priority(libraries);
+        *total_neum = total_neum.clone().combine_priority(other);
 
         total_neum.refresh();
     }
