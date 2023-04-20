@@ -19,6 +19,7 @@ pub struct Parse {
     pub statics: HashMap<String, Vec<Token>>,
 }
 
+#[inline(always)]
 pub fn parse<S: AsRef<str>>(
     tokens: Vec<(Token, Range<usize>)>,
     file: Option<S>,
@@ -261,6 +262,7 @@ pub fn parse<S: AsRef<str>>(
     })
 }
 
+#[inline(always)]
 pub fn converts<S: AsRef<str> + std::fmt::Display>(
     parsed: Vec<(Name, Vec<Token>)>,
     consts: HashMap<String, Vec<Token>>,
@@ -357,6 +359,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
     None
 }
 
+#[inline(always)]
 fn full_replacement(
     parsed: Vec<(Name, Vec<Token>)>,
     consts: HashMap<String, Vec<Token>>,
@@ -405,6 +408,7 @@ fn full_replacement(
     Some(chars.as_str().to_string())
 }
 
+#[inline(always)]
 fn replacement(
     returns_iter: &mut Iter<Token>,
     variables: HashMap<String, String>,

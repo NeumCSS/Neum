@@ -1,4 +1,5 @@
 #![crate_type = "lib"]
+#![warn(clippy::perf)]
 
 //! ![Neum](https://github.com/AMTitan/Neum/raw/master/assets/logo.svg)
 //! # Example

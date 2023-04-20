@@ -47,6 +47,7 @@ impl Neum {
     /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%;")));
     /// assert_eq!(neum.convert("w-5px"), Some(String::from("width:5px;")));
     /// ```
+    #[inline(always)]
     pub fn refresh(&mut self) {
         self.cache = hashbrown::HashMap::new();
     }
@@ -71,6 +72,7 @@ impl Neum {
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%px;")));
     /// ```
+    #[inline(always)]
     pub fn convert<S: AsRef<str>>(&mut self, input: S) -> Option<std::string::String> {
         parse::converts(self.converts.clone(), self.consts.clone(), &mut self.cache, input.as_ref())
     }
@@ -88,6 +90,7 @@ impl Neum {
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("mw-5"), Some(String::from("max-width:5px;")));
     /// ```
+    #[inline(always)]
     pub fn add<S: AsRef<str> + std::fmt::Display>(
         &mut self,
         content: S,
@@ -112,6 +115,7 @@ impl Neum {
     /// assert_eq!(neum.convert("w-5"), Some(String::from("width:5px;")));
     /// assert_eq!(neum.convert("w-5%"), Some(String::from("width:5%;")));
     /// ```
+    #[inline(always)]
     pub fn add_priority<S: AsRef<str> + std::fmt::Display>(
         &mut self,
         content: S,
@@ -126,6 +130,7 @@ impl Neum {
     }
 
     /// Returns a empty Neum type with nothing defined
+    #[inline(always)]
     pub fn empty() -> Neum {
         Neum {
             converts: Vec::new(),
@@ -146,6 +151,7 @@ impl Neum {
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("red;")));
     /// ```
+    #[inline(always)]
     pub fn combine(
         self,
         neum: Neum,
@@ -171,6 +177,7 @@ impl Neum {
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("yellow;")));
     /// ```
+    #[inline(always)]
     pub fn combine_priority(
         self,
         neum: Neum,
