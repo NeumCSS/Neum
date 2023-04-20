@@ -76,7 +76,7 @@ impl Neum {
     /// ```
     #[inline(always)]
     pub fn convert<S: AsRef<str>>(&mut self, input: S) -> Option<std::string::String> {
-        parse::converts(self.converts.clone(), Rc::new(self.consts.clone()), &mut self.cache, input.as_ref())
+        parse::converts(Rc::new(self.converts.clone()), Rc::new(self.consts.clone()), &mut self.cache, input.as_ref())
     }
 
     /// Add some more Neum definitions to your Neum object, this will also add your item to the lowest priority

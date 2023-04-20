@@ -265,7 +265,7 @@ pub fn parse<S: AsRef<str>>(
 
 #[inline(always)]
 pub fn converts<S: AsRef<str> + std::fmt::Display>(
-    parsed: Vec<(Name, Vec<Token>)>,
+    parsed: Rc<Vec<(Name, Vec<Token>)>>,
     consts: Rc<HashMap<String, Vec<Token>>>,
     cache: &mut HashMap<String, Option<String>>,
     input: S,
@@ -276,14 +276,14 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
     }
 
     let mut variables = HashMap::new();
-    let mut tokens = Vec::new();
+    let mut tokens = Rc::new(Vec::new());
     let mut returns_iter = None;
 
     if let Some(x) = consts.get(input) {
-        tokens = x.to_vec();
+        tokens = Rc::new(x.to_vec());
         returns_iter = Some(x.iter());
     } else {
-        for i in &parsed {
+        for i in parsed.iter() {
             if let Some(caps) = i.0.regex.captures(input) {
                 let mut caps_iter = caps.iter();
                 caps_iter.next();
@@ -303,7 +303,7 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                     );
                 }
                 returns_iter = Some(i.1.iter());
-                tokens = i.1.clone();
+                tokens = Rc::new(i.1.clone());
                 break;
             }
         }
@@ -366,12 +366,12 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
 
 #[inline(always)]
 fn full_replacement(
-    parsed: Vec<(Name, Vec<Token>)>,
+    parsed: Rc<Vec<(Name, Vec<Token>)>>,
     consts: Rc<HashMap<String, Vec<Token>>>,
     cache: &mut HashMap<String, Option<String>>,
     returns_iter: &mut Iter<Token>,
     variables: Rc<HashMap<String, String>>,
-    i: Vec<Token>,
+    i: Rc<Vec<Token>>,
 ) -> Option<String> {
     let mut search = String::new();
     let mut y = 1;
@@ -417,7 +417,7 @@ fn full_replacement(
 fn replacement(
     returns_iter: &mut Iter<Token>,
     variables: Rc<HashMap<String, String>>,
-    i: Vec<Token>,
+    i: Rc<Vec<Token>>,
 ) -> String {
     let mut next = returns_iter
         .next()
