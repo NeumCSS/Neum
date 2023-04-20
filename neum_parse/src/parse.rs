@@ -270,7 +270,8 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
     cache: &mut HashMap<String, Option<String>>,
     input: S,
 ) -> Option<String> {
-    if let Some(item) = cache.get(input.as_ref()) {
+    let input = input.as_ref();
+    if let Some(item) = cache.get(input) {
         return item.clone();
     }
 
@@ -278,12 +279,12 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
     let mut tokens = Vec::new();
     let mut returns_iter = None;
 
-    if let Some(x) = consts.get(input.as_ref()) {
+    if let Some(x) = consts.get(input) {
         tokens = x.to_vec();
         returns_iter = Some(x.iter());
     } else {
         for i in &parsed {
-            if let Some(caps) = i.0.regex.captures(input.as_ref()) {
+            if let Some(caps) = i.0.regex.captures(input) {
                 let mut caps_iter = caps.iter();
                 caps_iter.next();
                 for x in i.0.variables.clone() {
@@ -356,10 +357,10 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
             .replace(": ", ":")
             .replace(" {", "{")
             .replace("{ ", "{");
-        cache.insert(input.as_ref().to_string(), Some(data.clone()));
+        cache.insert(input.to_string(), Some(data.clone()));
         return Some(data);
     }
-    cache.insert(input.as_ref().to_string(), None);
+    cache.insert(input.to_string(), None);
     None
 }
 
