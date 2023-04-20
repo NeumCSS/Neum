@@ -26,6 +26,7 @@ pub fn parse<S: AsRef<str>>(
     file: Option<S>,
     content: S,
 ) -> Result<Parse, NeumError> {
+    let content = content.as_ref().to_string();
     let file = file.map(|x| x.as_ref().to_string());
     let mut list = Vec::new();
     let mut consts = HashMap::new();
@@ -59,7 +60,7 @@ pub fn parse<S: AsRef<str>>(
                                     NeumError::new(
                                         ErrorType::UnexpectedEndOfFile,
                                         file.clone(),
-                                        content.as_ref().to_string(),
+                                        content.clone(),
                                         i.1.end..i.1.end + 1,
                                     )
                                 })?
@@ -69,7 +70,7 @@ pub fn parse<S: AsRef<str>>(
                                     return Err(NeumError::new(
                                         ErrorType::VariableMultiDefine,
                                         file,
-                                        content.as_ref().to_string(),
+                                        content,
                                         next.1,
                                     ));
                                 }
@@ -78,7 +79,7 @@ pub fn parse<S: AsRef<str>>(
                                     NeumError::new(
                                         ErrorType::UnexpectedToken,
                                         file.clone(),
-                                        content.as_ref().to_string(),
+                                        content.clone(),
                                         next.clone().1,
                                     )
                                 })?;
@@ -86,7 +87,7 @@ pub fn parse<S: AsRef<str>>(
                                     return Err(NeumError::new(
                                         ErrorType::UnexpectedToken,
                                         file.clone(),
-                                        content.as_ref().to_string(),
+                                        content.clone(),
                                         next.1,
                                     ));
                                 }
@@ -95,7 +96,7 @@ pub fn parse<S: AsRef<str>>(
                                     return Err(NeumError::new(
                                         ErrorType::VariableMultiDefine,
                                         file,
-                                        content.as_ref().to_string(),
+                                        content,
                                         next.1,
                                     ));
                                 }
@@ -104,7 +105,7 @@ pub fn parse<S: AsRef<str>>(
                                 return Err(NeumError::new(
                                     ErrorType::UnexpectedToken,
                                     file,
-                                    content.as_ref().to_string(),
+                                    content,
                                     next.1,
                                 ));
                             }
@@ -121,7 +122,7 @@ pub fn parse<S: AsRef<str>>(
                         _ => Err(NeumError::new(
                             ErrorType::UnexpectedToken,
                             file.clone(),
-                            content.as_ref().to_string(),
+                            content.clone(),
                             i.clone().1,
                         )),
                     };
@@ -152,7 +153,7 @@ pub fn parse<S: AsRef<str>>(
                         NeumError::new(
                             ErrorType::UnexpectedEndOfFile,
                             file.clone(),
-                            content.as_ref().to_string(),
+                            content.clone(),
                             last.1.end..last.1.end + 1,
                         )
                     })?
@@ -164,7 +165,7 @@ pub fn parse<S: AsRef<str>>(
                             NeumError::new(
                                 ErrorType::UnexpectedEndOfFile,
                                 file.clone(),
-                                content.as_ref().to_string(),
+                                content.clone(),
                                 last.1.end..last.1.end + 1,
                             )
                         })?
@@ -216,7 +217,7 @@ pub fn parse<S: AsRef<str>>(
                             return Err(NeumError::new(
                                 ErrorType::UnexpectedToken,
                                 file,
-                                content.as_ref().to_string(),
+                                content.clone(),
                                 i.clone().1,
                             ));
                         }
@@ -230,7 +231,7 @@ pub fn parse<S: AsRef<str>>(
                     return Err(NeumError::new(
                         ErrorType::UnexpectedEndOfFile,
                         file,
-                        content.as_ref().to_string(),
+                        content.clone(),
                         last.1.end..last.1.end + 1,
                     ));
                 }
@@ -251,7 +252,7 @@ pub fn parse<S: AsRef<str>>(
                 return Err(NeumError::new(
                     ErrorType::UnexpectedToken,
                     file,
-                    content.as_ref().to_string(),
+                    content,
                     next.clone().1,
                 ));
             }
