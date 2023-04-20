@@ -1,5 +1,3 @@
-#![warn(clippy::perf)]
-
 mod args;
 use args::ARGS;
 mod html_parse;
