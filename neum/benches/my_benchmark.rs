@@ -24,8 +24,9 @@ fn parsing_files(c: &mut Criterion) {
 
 fn convert(c: &mut Criterion) {
     c.bench_function("convert", |b| {
+        let default = Neum::default();
         b.iter(|| {
-            let mut default = Neum::default();
+            let mut default = default.clone();
             for i in vec![
                 "m-0",
                 "ds-lg",
@@ -34,7 +35,6 @@ fn convert(c: &mut Criterion) {
                 "maw-360",
                 "m-auto",
                 "h-32",
-                "h-24",
                 "h-24",
                 "ml-5",
                 "f-left",
@@ -64,7 +64,7 @@ fn convert(c: &mut Criterion) {
 fn init(c: &mut Criterion) {
     c.bench_function("initilize default", |b| {
         b.iter(|| {
-            let _ = Neum::default();
+            Neum::default();
         })
     });
 }
