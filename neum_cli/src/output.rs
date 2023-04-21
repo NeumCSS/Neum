@@ -4,7 +4,7 @@ use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
 use std::path::Component;
-use std::sync::{Mutex, Arc};
+use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 lazy_static::lazy_static! {
