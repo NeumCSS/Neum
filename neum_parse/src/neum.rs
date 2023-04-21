@@ -144,14 +144,15 @@ impl Neum {
     /// Combine two Neum items, the first item has priority over the others
     /// ```
     /// # use neum_parse::*;
-    /// let file_one = Neum::new("color => red", None).unwrap();
+    /// let file_one = Neum::new("color => red\nhello-{} => hello {}", None).unwrap();
     ///
-    /// let file_two = Neum::new("color => yellow", None).unwrap();
+    /// let file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
     /// let mut neum = Neum::empty().combine(file_one).combine(file_two);
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("red;")));
+    /// assert_eq!(neum.convert("hello-world"), Some(String::from("hello world;")));
     /// ```
     #[inline(always)]
     pub fn combine(
@@ -160,24 +161,25 @@ impl Neum {
     ) -> Neum {
         let mut neum_clone = neum.converts;
         let mut self_clone = self.converts;
-        neum_clone.append(&mut self_clone);
+        self_clone.append(&mut neum_clone);
         let mut neum_clone_consts = neum.consts;
         let self_clone_consts = self.consts;
         neum_clone_consts.extend(self_clone_consts);
-        Neum{converts:neum_clone, consts: neum_clone_consts, cache: self.cache}
+        Neum{converts:self_clone, consts: neum_clone_consts, cache: self.cache}
     }
 
     /// Combine two Neum items, the first item has priority over the others
     /// ```
     /// # use neum_parse::*;
-    /// let file_one = Neum::new("color => red", None).unwrap();
+    /// let file_one = Neum::new("color => red\nhello-{} => hello {}", None).unwrap();
     ///
-    /// let file_two = Neum::new("color => yellow", None).unwrap();
+    /// let file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
     /// let mut neum = Neum::empty().combine(file_one).combine_priority(file_two);
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("yellow;")));
+    /// assert_eq!(neum.convert("hello-world"), Some(String::from("goodbye world;")));
     /// ```
     #[inline(always)]
     pub fn combine_priority(
@@ -186,10 +188,10 @@ impl Neum {
     ) -> Neum {
         let mut neum_clone = neum.converts;
         let mut self_clone = self.converts;
-        self_clone.append(&mut neum_clone);
+        neum_clone.append(&mut self_clone);
         let neum_clone_consts = neum.consts;
         let mut self_clone_consts = self.consts;
         self_clone_consts.extend(neum_clone_consts);
-        Neum{converts:self_clone, consts: self_clone_consts, cache: self.cache}
+        Neum{converts:neum_clone, consts: self_clone_consts, cache: self.cache}
     }
 }
