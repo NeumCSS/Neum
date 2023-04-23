@@ -5,6 +5,9 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+use std::io::{self, Write};
+use std::time::Instant;
+use crate::ARGS;
 
 lazy_static! {
     pub static ref HTML_FILES: Arc<Mutex<HashMap<PathBuf, Vec<String>>>> =
@@ -12,7 +15,9 @@ lazy_static! {
 }
 
 pub fn update_html(path: PathBuf) -> anyhow::Result<()> {
-    println!("Updating: {}", path.display());
+    print!("Updating: {}{}", path.display(), match ARGS.verbose {true => "", false => "\n"});
+    io::stdout().flush().unwrap();
+    let now = Instant::now();
     let mut real_classes = Vec::new();
     if let Ok(content) = fs::read_to_string(path.clone()) {
         let classes = Dom::parse(&content)?
@@ -39,6 +44,9 @@ pub fn update_html(path: PathBuf) -> anyhow::Result<()> {
         let html_files = HTML_FILES.clone();
         let mut html_files = html_files.lock().unwrap();
         html_files.remove(&path);
+    }
+    if ARGS.verbose {
+        println!(" in {:?}", now.elapsed());
     }
     Ok(())
 }
