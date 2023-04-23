@@ -1,4 +1,5 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion, black_box, BatchSize};
+use std::rc::Rc;
 
 use neum::Neum;
 
@@ -15,18 +16,20 @@ fn parsing_files(c: &mut Criterion) {
             data.push_str(&content);
         }
     }
+    
+    let data = Rc::new(data.as_str());
+
     c.bench_function("parse defaults", |b| {
         b.iter(|| {
-            Neum::new(data.clone(), None).unwrap();
+            Neum::new(*data.clone(), None).unwrap();
         })
     });
 }
 
 fn convert(c: &mut Criterion) {
+    let default = Neum::default();
     c.bench_function("convert", |b| {
-        let default = Neum::default();
-        b.iter(|| {
-            let mut default = default.clone();
+        b.iter_batched(|| default.clone(), |mut default| {
             for i in vec![
                 "m-0",
                 "ds-lg",
@@ -55,9 +58,9 @@ fn convert(c: &mut Criterion) {
                 "r",
                 "rl-none",
             ] {
-                default.convert(i).unwrap();
+                default.convert(i);
             }
-        })
+        }, BatchSize::SmallInput)
     });
 }
 
