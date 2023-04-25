@@ -149,23 +149,21 @@ impl Neum {
     /// let file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
-    /// let mut neum = Neum::empty().combine(file_one).combine(file_two);
+    /// let mut neum = Neum::empty();
+    /// neum.combine(file_one);
+    /// neum.combine(file_two);
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("red;")));
     /// assert_eq!(neum.convert("hello-world"), Some(String::from("hello world;")));
     /// ```
     #[inline(always)]
     pub fn combine(
-        self,
-        neum: Neum,
-    ) -> Neum {
-        let mut neum_clone = (*neum.converts).clone();
-        let mut self_clone = (*self.converts).clone();
-        self_clone.append(&mut neum_clone);
-        let mut neum_clone_consts = (*neum.consts).clone();
-        let self_clone_consts = self.consts;
-        neum_clone_consts.extend((*self_clone_consts).clone());
-        Neum{converts:Arc::new(self_clone), consts: Arc::new(neum_clone_consts), cache: self.cache}
+        &mut self,
+        neum: &mut Neum,
+    ) {
+        Arc::get_mut(&mut self.converts).unwrap().append(Arc::get_mut(&mut neum.converts).unwrap());
+        Arc::get_mut(&mut neum.consts).unwrap().extend(Arc::get_mut(&mut self.consts).unwrap().clone());
+        self.consts = neum.consts.clone();
     }
 
     /// Combine two Neum items, the first item has priority over the others
@@ -176,22 +174,20 @@ impl Neum {
     /// let file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
-    /// let mut neum = Neum::empty().combine(file_one).combine_priority(file_two);
+    /// let mut neum = Neum::empty();
+    /// neum.combine(file_one);
+    /// neum.combine_priority(file_two);
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("yellow;")));
     /// assert_eq!(neum.convert("hello-world"), Some(String::from("goodbye world;")));
     /// ```
     #[inline(always)]
     pub fn combine_priority(
-        self,
-        neum: Neum,
-    ) -> Neum {
-        let mut neum_clone = (*neum.converts).clone();
-        let mut self_clone = (*self.converts).clone();
-        neum_clone.append(&mut self_clone);
-        let neum_clone_consts = (*neum.consts).clone();
-        let mut self_clone_consts = (*self.consts).clone();
-        self_clone_consts.extend(neum_clone_consts);
-        Neum{converts:Arc::new(neum_clone), consts: Arc::new(self_clone_consts), cache: self.cache}
+        &mut self,
+        neum: &mut Neum,
+    ) {
+        Arc::get_mut(&mut neum.converts).unwrap().append(Arc::get_mut(&mut self.converts).unwrap());
+        Arc::get_mut(&mut self.consts).unwrap().extend(Arc::get_mut(&mut neum.consts).unwrap().clone());
+        self.converts = neum.converts.clone();
     }
 }

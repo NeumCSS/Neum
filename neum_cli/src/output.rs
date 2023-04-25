@@ -39,15 +39,15 @@ pub fn update(refresh: bool) {
                 .components()
                 .any(|x| x == Component::Normal(OsStr::new(".neum")))
             {
-                libraries = libraries.combine_priority(neum.clone());
+                libraries.combine_priority(&mut neum.clone());
             } else {
-                other = other.combine_priority(neum.clone());
+                other.combine_priority(&mut neum.clone());
             }
         }
 
         *total_neum = (*REAL_DEFAULTS.clone()).clone();
-        *total_neum = total_neum.clone().combine_priority(libraries);
-        *total_neum = total_neum.clone().combine_priority(other);
+        total_neum.combine_priority(&mut libraries);
+        total_neum.combine_priority(&mut other);
 
         total_neum.refresh();
     }
