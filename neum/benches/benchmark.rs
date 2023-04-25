@@ -76,5 +76,63 @@ fn init(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, parsing_files, convert, init);
+fn add(c: &mut Criterion) {
+    let mut data = String::new();
+    for i in walkdir::WalkDir::new(std::path::Path::new("src/default")) {
+        let i = i
+            .as_ref()
+            .unwrap_or_else(|_| panic!("Cant get a file, {i:?}"));
+        if i.file_type().is_file() {
+            let file = i.path().display().to_string();
+            let content = std::fs::read_to_string(file.clone())
+                .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
+            data.push_str(&content);
+        }
+    }
+
+    let data = Rc::new(data.as_str());
+
+    c.bench_function("add", |b| {
+        b.iter(|| {
+            Neum::empty().add(*data.clone(), None).unwrap();
+        })
+    });
+
+    c.bench_function("add priority", |b| {
+        b.iter(|| {
+            Neum::empty().add_priority(*data.clone(), None).unwrap();
+        })
+    });
+}
+
+fn combine(c: &mut Criterion) {
+    let mut data = String::new();
+    for i in walkdir::WalkDir::new(std::path::Path::new("src/default")) {
+        let i = i
+            .as_ref()
+            .unwrap_or_else(|_| panic!("Cant get a file, {i:?}"));
+        if i.file_type().is_file() {
+            let file = i.path().display().to_string();
+            let content = std::fs::read_to_string(file.clone())
+                .unwrap_or_else(|_| panic!("Cant read the contents of {file}"));
+            data.push_str(&content);
+        }
+    }
+
+    let data = Rc::new(Neum::new(data.as_str(), None).unwrap());
+
+    c.bench_function("combine", |b| {
+        b.iter(|| {
+            Neum::empty().combine(Rc::make_mut(&mut data.clone()));
+        })
+    });
+
+    c.bench_function("combine priority", |b| {
+        b.iter(|| {
+            Neum::empty().combine_priority(Rc::make_mut(&mut data.clone()));
+        })
+    });
+}
+
+criterion_group!(benches, parsing_files, convert, init, add, combine);
 criterion_main!(benches);
