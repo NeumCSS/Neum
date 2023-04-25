@@ -1,12 +1,12 @@
+use crate::ARGS;
 use lazy_static::lazy_static;
 use neum::Neum;
 use std::collections::HashMap;
 use std::fs;
+use std::io::{self, Write};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use std::io::{self, Write};
 use std::time::Instant;
-use crate::ARGS;
 
 lazy_static! {
     pub static ref NEUM_FILES: Arc<Mutex<HashMap<PathBuf, Neum>>> =
@@ -14,7 +14,14 @@ lazy_static! {
 }
 
 pub fn update_neum(path: PathBuf) -> Result<(), neum::error::NeumError> {
-    print!("Updating: {}{}", path.display(), match ARGS.verbose {true => "", false => "\n"});
+    print!(
+        "Updating: {}{}",
+        path.display(),
+        match ARGS.verbose {
+            true => "",
+            false => "\n",
+        }
+    );
     io::stdout().flush().unwrap();
     let now = Instant::now();
     if let Ok(content) = &fs::read_to_string(path.clone()) {

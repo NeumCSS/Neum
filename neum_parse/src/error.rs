@@ -65,8 +65,9 @@ impl NeumError {
         content: S,
         location: Range<usize>,
     ) -> NeumError {
-        let (x, y) = get_loc(content.as_ref(), location.start)
-            .expect("Should never fail unless there is a internal error, but failed to get location");
+        let (x, y) = get_loc(content.as_ref(), location.start).expect(
+            "Should never fail unless there is a internal error, but failed to get location",
+        );
         let line = get_line(content.as_ref(), y - 1)
             .expect("Should never fail unless there is a internal error, but failed to get line");
         NeumError {

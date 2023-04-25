@@ -1,13 +1,13 @@
+use crate::ARGS;
 use html_parser::{Dom, Node};
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::fs;
+use std::io::{self, Write};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use std::io::{self, Write};
 use std::time::Instant;
-use crate::ARGS;
 
 lazy_static! {
     pub static ref HTML_FILES: Arc<Mutex<HashMap<PathBuf, Vec<String>>>> =
@@ -15,7 +15,14 @@ lazy_static! {
 }
 
 pub fn update_html(path: PathBuf) -> anyhow::Result<()> {
-    print!("Updating: {}{}", path.display(), match ARGS.verbose {true => "", false => "\n"});
+    print!(
+        "Updating: {}{}",
+        path.display(),
+        match ARGS.verbose {
+            true => "",
+            false => "\n",
+        }
+    );
     io::stdout().flush().unwrap();
     let now = Instant::now();
     let mut real_classes = Vec::new();
