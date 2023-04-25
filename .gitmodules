@@ -1,4 +1,0 @@
-[submodule "example/.neum/cute"]
-	path = example/.neum/cute
-	url = https://github.com/NeumCSS/Cute
-	branch = dev
