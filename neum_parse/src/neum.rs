@@ -1,16 +1,16 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 /// This is a Neum converter object
 #[derive(Debug, Clone)]
 pub struct Neum {
     #[doc(hidden)]
-    pub converts: Vec<(parse::Name, Vec<lexer::Token>)>,
+    pub converts: Arc<Vec<(parse::Name, Vec<lexer::Token>)>>,
 
     #[doc(hidden)]
-    pub consts: hashbrown::HashMap<std::string::String, Vec<lexer::Token>>,
+    pub consts: Arc<hashbrown::HashMap<std::string::String, Vec<lexer::Token>>>,
 
     #[doc(hidden)]
-    pub cache: hashbrown::HashMap<std::string::String, Option<std::string::String>>,
+    pub cache: Arc<hashbrown::HashMap<std::string::String, Option<std::string::String>>>,
 }
 
 impl Neum {
@@ -22,7 +22,7 @@ impl Neum {
     pub fn new<S: AsRef<str> + std::fmt::Display>(content: S, file: Option<S>) -> Result<Neum, error::NeumError> {
         let file = file.map(|x| x.as_ref().to_string());
         let output = parse::parse(lexer::lex(file.clone(), content.as_ref().to_string())?, file, content.as_ref().to_string())?;
-        Ok(Neum { converts: output.dynamics.to_vec(), consts: output.statics, cache: hashbrown::HashMap::new() })
+        Ok(Neum { converts: Arc::new(output.dynamics.to_vec()), consts: Arc::new(output.statics), cache: Arc::new(hashbrown::HashMap::new()) })
     }
 
     /// Refresh the cache so that if a definition changed it will actually give a different responce
@@ -51,7 +51,7 @@ impl Neum {
     /// ```
     #[inline(always)]
     pub fn refresh(&mut self) {
-        self.cache = hashbrown::HashMap::new();
+        self.cache = Arc::new(hashbrown::HashMap::new());
     }
 
     /// Takes your current Neum object and finds your input and gives the output
@@ -76,7 +76,7 @@ impl Neum {
     /// ```
     #[inline(always)]
     pub fn convert<S: AsRef<str>>(&mut self, input: S) -> Option<std::string::String> {
-        parse::converts(Rc::new(self.converts.clone()), Rc::new(self.consts.clone()), &mut self.cache, input.as_ref())
+        parse::converts(self.converts.clone(), self.consts.clone(), &mut Arc::make_mut(&mut self.cache), input.as_ref())
     }
 
     /// Add some more Neum definitions to your Neum object, this will also add your item to the lowest priority
@@ -99,8 +99,8 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        self.converts.append(&mut neum.converts);
-        self.consts.extend(neum.consts);
+        Arc::get_mut(&mut self.converts).unwrap().append(Arc::get_mut(&mut neum.converts).unwrap());
+        Arc::get_mut(&mut self.consts).unwrap().extend((*neum.consts).clone());
         Ok(())
     }
     
@@ -124,9 +124,9 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        neum.converts.append(&mut self.converts);
+        Arc::get_mut(&mut neum.converts).unwrap().append(Arc::get_mut(&mut self.converts).unwrap());
         self.converts = neum.converts;
-        neum.consts.extend(self.consts.clone());
+        Arc::get_mut(&mut neum.consts).unwrap().extend((*self.consts).clone());
         self.consts = neum.consts;
         Ok(())
     }
@@ -135,9 +135,9 @@ impl Neum {
     #[inline(always)]
     pub fn empty() -> Neum {
         Neum {
-            converts: Vec::new(),
-            consts: hashbrown::HashMap::new(),
-            cache: hashbrown::HashMap::new()
+            converts: Arc::new(Vec::new()),
+            consts: Arc::new(hashbrown::HashMap::new()),
+            cache: Arc::new(hashbrown::HashMap::new())
         }
     }
 
@@ -159,13 +159,13 @@ impl Neum {
         self,
         neum: Neum,
     ) -> Neum {
-        let mut neum_clone = neum.converts;
-        let mut self_clone = self.converts;
+        let mut neum_clone = (*neum.converts).clone();
+        let mut self_clone = (*self.converts).clone();
         self_clone.append(&mut neum_clone);
-        let mut neum_clone_consts = neum.consts;
+        let mut neum_clone_consts = (*neum.consts).clone();
         let self_clone_consts = self.consts;
-        neum_clone_consts.extend(self_clone_consts);
-        Neum{converts:self_clone, consts: neum_clone_consts, cache: self.cache}
+        neum_clone_consts.extend((*self_clone_consts).clone());
+        Neum{converts:Arc::new(self_clone), consts: Arc::new(neum_clone_consts), cache: self.cache}
     }
 
     /// Combine two Neum items, the first item has priority over the others
@@ -186,12 +186,12 @@ impl Neum {
         self,
         neum: Neum,
     ) -> Neum {
-        let mut neum_clone = neum.converts;
-        let mut self_clone = self.converts;
+        let mut neum_clone = (*neum.converts).clone();
+        let mut self_clone = (*self.converts).clone();
         neum_clone.append(&mut self_clone);
-        let neum_clone_consts = neum.consts;
-        let mut self_clone_consts = self.consts;
+        let neum_clone_consts = (*neum.consts).clone();
+        let mut self_clone_consts = (*self.consts).clone();
         self_clone_consts.extend(neum_clone_consts);
-        Neum{converts:neum_clone, consts: self_clone_consts, cache: self.cache}
+        Neum{converts:Arc::new(neum_clone), consts: Arc::new(self_clone_consts), cache: self.cache}
     }
 }

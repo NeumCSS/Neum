@@ -1,4 +1,4 @@
-use criterion::{criterion_group, criterion_main, Criterion, black_box, BatchSize};
+use criterion::{criterion_group, criterion_main, Criterion, BatchSize};
 use std::rc::Rc;
 
 use neum::Neum;

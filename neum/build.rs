@@ -82,7 +82,6 @@ fn main() {
         &mut file,
         "use neum_parse::{{parse::{{*}}, lexer::Token::*}};
 use regex::Regex;
-use std::sync::Arc;
 
 impl Default for Neum {{
     /// A Neum object with the default values
@@ -91,7 +90,7 @@ impl Default for Neum {{
     /// assert_eq!(Neum::default().convert(\"w-50%\"), Some(String::from(\"width:50%;\")));
     /// ```
     fn default() -> Self {{
-        Neum {{ converts: vec![{text}], consts: [{consts_text}].into_iter().collect(), cache: hashbrown::HashMap::new() }}
+        Neum {{ converts: Arc::new(vec![{text}]), consts: Arc::new([{consts_text}].into_iter().collect()), cache: Arc::new(hashbrown::HashMap::new()) }}
     }}
 }}
 "

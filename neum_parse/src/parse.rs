@@ -4,7 +4,6 @@ use core::slice::Iter;
 use hashbrown::HashMap;
 use regex::Regex;
 use std::ops::Range;
-use std::rc::Rc;
 use std::sync::Arc;
 
 #[doc(hidden)]
@@ -269,8 +268,8 @@ pub fn parse<S: AsRef<str>>(
 
 #[inline(always)]
 pub fn converts<S: AsRef<str> + std::fmt::Display>(
-    parsed: Rc<Vec<(Name, Vec<Token>)>>,
-    consts: Rc<HashMap<String, Vec<Token>>>,
+    parsed: Arc<Vec<(Name, Vec<Token>)>>,
+    consts: Arc<HashMap<String, Vec<Token>>>,
     cache: &mut HashMap<String, Option<String>>,
     input: S,
 ) -> Option<String> {
@@ -280,11 +279,11 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
     }
 
     let mut variables = HashMap::new();
-    let mut tokens = Rc::new(Vec::new());
+    let mut tokens = Arc::new(Vec::new());
     let mut returns_iter = None;
 
     if let Some(x) = consts.get(input) {
-        tokens = Rc::new(x.to_vec());
+        tokens = Arc::new(x.to_vec());
         returns_iter = Some(x.iter());
     } else {
         for i in parsed.iter() {
@@ -307,13 +306,13 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
                     );
                 }
                 returns_iter = Some(i.1.iter());
-                tokens = Rc::new(i.1.clone());
+                tokens = Arc::new(i.1.clone());
                 break;
             }
         }
     }
 
-    let variables = Rc::new(variables);
+    let variables = Arc::new(variables);
 
     if let Some(mut returns_iter) = returns_iter {
         let mut returns = String::new();
@@ -370,12 +369,12 @@ pub fn converts<S: AsRef<str> + std::fmt::Display>(
 
 #[inline(always)]
 fn full_replacement(
-    parsed: Rc<Vec<(Name, Vec<Token>)>>,
-    consts: Rc<HashMap<String, Vec<Token>>>,
+    parsed: Arc<Vec<(Name, Vec<Token>)>>,
+    consts: Arc<HashMap<String, Vec<Token>>>,
     cache: &mut HashMap<String, Option<String>>,
     returns_iter: &mut Iter<Token>,
-    variables: Rc<HashMap<String, String>>,
-    i: Rc<Vec<Token>>,
+    variables: Arc<HashMap<String, String>>,
+    i: Arc<Vec<Token>>,
 ) -> Option<String> {
     let mut search = String::new();
     let mut y = 1;
@@ -420,8 +419,8 @@ fn full_replacement(
 #[inline(always)]
 fn replacement(
     returns_iter: &mut Iter<Token>,
-    variables: Rc<HashMap<String, String>>,
-    i: Rc<Vec<Token>>,
+    variables: Arc<HashMap<String, String>>,
+    i: Arc<Vec<Token>>,
 ) -> String {
     let mut next = returns_iter
         .next()
