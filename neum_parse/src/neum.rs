@@ -144,14 +144,14 @@ impl Neum {
     /// Combine two Neum items, the first item has priority over the others
     /// ```
     /// # use neum_parse::*;
-    /// let file_one = Neum::new("color => red\nhello-{} => hello {}", None).unwrap();
+    /// let mut file_one = Neum::new("color => red\nhello-{} => hello {}", None).unwrap();
     ///
-    /// let file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
+    /// let mut file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
     /// let mut neum = Neum::empty();
-    /// neum.combine(file_one);
-    /// neum.combine(file_two);
+    /// neum.combine(&mut file_one);
+    /// neum.combine(&mut file_two);
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("red;")));
     /// assert_eq!(neum.convert("hello-world"), Some(String::from("hello world;")));
@@ -161,22 +161,22 @@ impl Neum {
         &mut self,
         neum: &mut Neum,
     ) {
-        Arc::get_mut(&mut self.converts).unwrap().append(Arc::get_mut(&mut neum.converts).unwrap());
-        Arc::get_mut(&mut neum.consts).unwrap().extend(Arc::get_mut(&mut self.consts).unwrap().clone());
+        Arc::make_mut(&mut self.converts).append(Arc::make_mut(&mut neum.converts));
+        Arc::make_mut(&mut neum.consts).extend(Arc::make_mut(&mut self.consts).clone());
         self.consts = neum.consts.clone();
     }
 
     /// Combine two Neum items, the first item has priority over the others
     /// ```
     /// # use neum_parse::*;
-    /// let file_one = Neum::new("color => red\nhello-{} => hello {}", None).unwrap();
+    /// let mut file_one = Neum::new("color => red\nhello-{} => hello {}", None).unwrap();
     ///
-    /// let file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
+    /// let mut file_two = Neum::new("color => yellow\nhello-{} => goodbye {}", None).unwrap();
     ///
     /// // Note that file_two is going to have more priority to file_one
     /// let mut neum = Neum::empty();
-    /// neum.combine(file_one);
-    /// neum.combine_priority(file_two);
+    /// neum.combine(&mut file_one);
+    /// neum.combine_priority(&mut file_two);
     ///
     /// assert_eq!(neum.convert("color"), Some(String::from("yellow;")));
     /// assert_eq!(neum.convert("hello-world"), Some(String::from("goodbye world;")));
@@ -186,8 +186,8 @@ impl Neum {
         &mut self,
         neum: &mut Neum,
     ) {
-        Arc::get_mut(&mut neum.converts).unwrap().append(Arc::get_mut(&mut self.converts).unwrap());
-        Arc::get_mut(&mut self.consts).unwrap().extend(Arc::get_mut(&mut neum.consts).unwrap().clone());
+        Arc::make_mut(&mut neum.converts).append(Arc::make_mut(&mut self.converts));
+        Arc::make_mut(&mut self.consts).extend(Arc::make_mut(&mut neum.consts).clone());
         self.converts = neum.converts.clone();
     }
 }
