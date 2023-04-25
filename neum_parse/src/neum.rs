@@ -99,8 +99,8 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        Arc::get_mut(&mut self.converts).unwrap().append(Arc::get_mut(&mut neum.converts).unwrap());
-        Arc::get_mut(&mut self.consts).unwrap().extend((*neum.consts).clone());
+        Arc::make_mut(&mut self.converts).append(Arc::make_mut(&mut neum.converts));
+        Arc::make_mut(&mut self.consts).extend((*neum.consts).clone());
         Ok(())
     }
     
@@ -124,9 +124,9 @@ impl Neum {
         file: Option<S>,
     ) -> Result<(), error::NeumError> {
         let mut neum = Neum::new(content, file)?;
-        Arc::get_mut(&mut neum.converts).unwrap().append(Arc::get_mut(&mut self.converts).unwrap());
+        Arc::make_mut(&mut neum.converts).append(Arc::make_mut(&mut self.converts));
         self.converts = neum.converts;
-        Arc::get_mut(&mut neum.consts).unwrap().extend((*self.consts).clone());
+        Arc::make_mut(&mut neum.consts).extend((*self.consts).clone());
         self.consts = neum.consts;
         Ok(())
     }
