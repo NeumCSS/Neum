@@ -1,11 +1,15 @@
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use lazy_static::lazy_static;
 use std::path::PathBuf;
+
+#[cfg(feature = "doc")]
+use clap::Subcommand;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct Args {
+    #[cfg(feature = "doc")]
     #[command(subcommand)]
     command: Option<Commands>,
 
@@ -34,6 +38,7 @@ pub struct Args {
     pub watch: bool,
 }
 
+#[cfg(feature = "doc")]
 #[derive(Subcommand)]
 pub enum Commands {
     Doc {
