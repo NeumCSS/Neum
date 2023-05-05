@@ -22,3 +22,7 @@ notify-debouncer-mini = "0.2.1"
 html_parser = "0.6.3"
 anyhow = "1.0.70"
 itertools = "0.10.5"
+
+[features]
+default = ["doc"]
+doc = []

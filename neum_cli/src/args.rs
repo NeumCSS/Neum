@@ -1,10 +1,14 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use lazy_static::lazy_static;
 use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
+#[command(args_conflicts_with_subcommands = true)]
 pub struct Args {
+    #[command(subcommand)]
+    command: Option<Commands>,
+
     /// This is the path to where your html and javascript is
     #[clap(short, long, value_parser)]
     pub source_code: Option<PathBuf>,
@@ -28,6 +32,19 @@ pub struct Args {
     /// Automatically look for files to change then update your outputed css (setting this will make it not watch)
     #[clap(short, long, value_parser, default_value_t = true, action=clap::ArgAction::SetFalse)]
     pub watch: bool,
+}
+
+#[derive(Subcommand)]
+pub enum Commands {
+    Doc {
+        /// The path to where your custom neum files are defined, defaults to your currently folder
+        #[clap(short, long, value_parser)]
+        neum_folder: Option<PathBuf>,
+
+        /// Your output for the docs file
+        #[clap(short, long, value_parser)]
+        output: PathBuf,
+    },
 }
 
 lazy_static! {
