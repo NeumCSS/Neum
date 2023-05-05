@@ -15,7 +15,7 @@ fn main() {
             if ARGS.watch {
                 watcher::watch();
             }
-        },
+        }
         #[cfg(feature = "doc")]
         Some(args::Commands::Doc(_)) => {
             doc::walk::walk_neum_folder();

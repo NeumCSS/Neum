@@ -1,12 +1,10 @@
 pub struct Reader {
-    input: String
+    input: String,
 }
 
 impl Reader {
     pub fn new(input: String) -> Reader {
-        Reader {
-            input
-        }
+        Reader { input }
     }
 
     pub fn get_next(&mut self) -> Option<String> {
@@ -18,18 +16,25 @@ impl Reader {
             let next = lines.next()?;
             if !next.is_empty() {
                 if returns.starts_with("/*") {
-                    count+=next.chars().collect::<Vec<_>>().windows(2).map(|x| match x {
-                        ['/', '*'] => 1,
-                        ['*', '/'] => -1,
-                        _ => 0
-                    }).sum::<i32>();
-                }
-                else {
-                    count+=next.chars().map(|x| match x {
-                        '{' => 1,
-                        '}' => -1,
-                        _ => 0
-                    }).sum::<i32>();
+                    count += next
+                        .chars()
+                        .collect::<Vec<_>>()
+                        .windows(2)
+                        .map(|x| match x {
+                            ['/', '*'] => 1,
+                            ['*', '/'] => -1,
+                            _ => 0,
+                        })
+                        .sum::<i32>();
+                } else {
+                    count += next
+                        .chars()
+                        .map(|x| match x {
+                            '{' => 1,
+                            '}' => -1,
+                            _ => 0,
+                        })
+                        .sum::<i32>();
                 }
                 first = false;
                 returns.push_str(&format!("\n{next}"));

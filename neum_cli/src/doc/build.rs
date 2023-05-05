@@ -1,33 +1,40 @@
-use std::path::PathBuf;
 use neum::Neum;
 use std::fs;
 use std::io::Write;
+use std::path::PathBuf;
 
 pub struct Builder {
     neum: Neum,
-    files: Vec<PathBuf>
+    files: Vec<PathBuf>,
 }
 
 impl Builder {
     pub fn new() -> Builder {
         Builder {
             neum: Neum::default(),
-            files: Vec::new()
+            files: Vec::new(),
         }
     }
 
     pub fn add(&mut self, path: PathBuf) -> anyhow::Result<(), neum::error::NeumError> {
-        self.neum.add_priority(std::fs::read_to_string(path.clone()).unwrap(), Some(path.display().to_string()))?;
+        self.neum.add_priority(
+            std::fs::read_to_string(path.clone()).unwrap(),
+            Some(path.display().to_string()),
+        )?;
         self.files.push(path);
         Ok(())
     }
 
     pub fn build(self) -> anyhow::Result<()> {
         for i in self.files {
-            let mut reader = crate::doc::reader::Reader::new(fs::read_to_string(i.clone()).unwrap());
+            let mut reader =
+                crate::doc::reader::Reader::new(fs::read_to_string(i.clone()).unwrap());
 
             let mut output = doc!().output.clone();
-            output.push(i.as_path().strip_prefix(doc!().neum_folder.clone().unwrap_or(".".into()))?);
+            output.push(
+                i.as_path()
+                    .strip_prefix(doc!().neum_folder.clone().unwrap_or(".".into()))?,
+            );
 
             fs::create_dir_all(output.parent().unwrap())?;
 
@@ -40,25 +47,32 @@ impl Builder {
                     "///" => {
                         split.remove(0);
                         "h2"
-                    },
+                    }
                     "//" => {
                         split.remove(0);
                         "p"
-                    },
+                    }
                     "/*" => {
                         split.remove(0);
                         split.pop();
                         "p"
-                    },
+                    }
                     _ => {
                         markdown = false;
                         "pre"
-                    },
+                    }
                 };
-                file.write_all(format!("<{tag}>{}</{tag}>\n", match markdown {
-                    true => md_to_html(&split.join(" ")),
-                    false => split.join(" ")
-                }).as_bytes()).unwrap();
+                file.write_all(
+                    format!(
+                        "<{tag}>{}</{tag}>\n",
+                        match markdown {
+                            true => md_to_html(&split.join(" ")),
+                            false => split.join(" "),
+                        }
+                    )
+                    .as_bytes(),
+                )
+                .unwrap();
             }
 
             println!("{output:?}");
