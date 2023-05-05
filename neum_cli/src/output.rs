@@ -77,7 +77,7 @@ pub fn update(refresh: bool) {
             }
         }
     }
-    let mut file = File::create(ARGS.output.clone()).unwrap();
+    let mut file = File::create(ARGS.output.clone().unwrap()).unwrap();
     file.write_all(output.as_bytes()).unwrap();
     if ARGS.verbose {
         println!("Generated css in {:?}", now.elapsed());
