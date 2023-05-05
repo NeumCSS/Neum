@@ -36,16 +36,16 @@ impl Builder {
             while let Some(x) = reader.get_next() {
                 let mut split = x.split(' ').collect::<Vec<&str>>();
                 let mut markdown = true;
-                let tag = match split.first().unwrap() {
-                    &"///" => {
+                let tag = match *split.first().unwrap() {
+                    "///" => {
                         split.remove(0);
                         "h2"
                     },
-                    &"//" => {
+                    "//" => {
                         split.remove(0);
                         "p"
                     },
-                    &"/*" => {
+                    "/*" => {
                         split.remove(0);
                         split.pop();
                         "p"
